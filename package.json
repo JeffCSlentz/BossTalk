@@ -1,0 +1,10 @@
+{
+  "name": "boss-talk",
+  "version": "1.0.0",
+  "description": "Sounds from WoW Bosses in Discord",
+  "main": "bossTalk.js",
+  "author": "Jeffrey Slentz",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
+}
