@@ -7,13 +7,12 @@ const Discord =         require('discord.js');
 const client = new Discord.Client();
 
 //Third-Party
-const readlineSync =    require('readline-sync');
 const Enmap =           require('enmap');
 const EnmapLevel =      require('enmap-level');
 
 //First-Party
 const data =            require('./utility/dataManipulation.js')
-const utility =         require('./utility/utility.js')
+//const utility =         require('./utility/utility.js')
 const Creature =        require('./utility/classes/Creature.js');
 const Position =        require('./utility/classes/Position.js');
 const Sound =           require('./utility/classes/Sound.js').default;
