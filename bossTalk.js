@@ -33,10 +33,11 @@ const creatureFiles = fs.readdirSync(creaturesFolder);
 
 function readMapSync(folder){
   try {
-    return new Discord.Collection(JSON.parse(fs.readFileSync(folder)));;
+    return new Discord.Collection(JSON.parse(fs.readFileSync(folder)));
   }
   catch(error) {
     console.log("readmapSync went wrong")
+    console.log(error)
     throw error;
   }
 }
@@ -51,17 +52,15 @@ function loadCommands(){
 
 //Load runtime data from persistent data.
 function loadFiles(){
-  dataList = [{data:client.creatureSounds, name:"creatureSounds"},
-  {data:client.guildTags, name:"guildTags"},
-  {data:client.browniePoints, name:"browniePoints"}]
-  
-  for (item in dataList){
+  dataList = ["creatureSounds", "guildTags", "browniePoints"]
+
+  for (item of dataList){
     try {
-      item.data = readMapSync(`${dataFolder}/${item.name}.json`);
-      console.log(`Found ${item.name}.json`)
+      client[item] = readMapSync(`${dataFolder}/${item}.json`);
+      console.log(`Found ${item}.json`)
     }
     catch(error) {
-      console.log(`No file found, starting from empty ${item.name}.`);
+      console.log(`No file found, starting from empty ${item}.`);
     }
   }
 }
@@ -127,15 +126,11 @@ function loadCreatures(){
   }
 }
 
-function loadGuildTags(){
-  
-}
-
 function startup(){
   loadCommands();
   loadFiles();
   loadCreatures();
-  loadGuildTags();
+  
   client.login(token);
 }
 
