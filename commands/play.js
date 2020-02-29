@@ -18,7 +18,7 @@ module.exports = {
       if (rewardNames.includes(args[0])){
         rewardName = args[0]
         browniePoints = utility.GetAlwaysFromCollection(message.client.browniePoints, message.author.id, 0);
-        neededBP = rewards[rewardName];
+        neededBP = rewardNames[rewardName];
 
         if(browniePoints >= neededBP){
           const fileName = `./sounds/rewards/${rewardName}.ogg`;
