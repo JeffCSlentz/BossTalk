@@ -6,28 +6,22 @@ module.exports = {
     name: 'play',
     description: 'Play a sound!',
     usage: '[expansion] [dungeon] [boss] [number]',
+    guildOnly: true,
     execute(message, args) {
-      //If it's not in a guild, ignore it.
       if(!message.guild) return;
-
-      //It needs at least one argument.
-      if (!args.length) {
-        return;
-      }
-
-      //If the bot is not in a voice channel.
+      if(!args.length) return;
       if(!message.client.voiceConnections.has(message.guild.id)){
-        return message.channel.send(`I can't play sounds if i'm not in a channel (´･ω･\`)`);;
+        return message.channel.send(`I can't play sounds if i'm not in a channel (´･ω･\`)`);
       }
-
 
       //If it's a reward
       if (rewardNames.includes(args[0])){
+        rewardName = args[0]
         browniePoints = utility.GetAlwaysFromCollection(message.client.browniePoints, message.author.id, 0);
-        neededBP = rewards[args[0]];
+        neededBP = rewards[rewardName];
 
         if(browniePoints >= neededBP){
-          const fileName = `./sounds/rewards/${args[0]}.ogg`;
+          const fileName = `./sounds/rewards/${rewardName}.ogg`;
           PlayFile(message, fileName);
           return message.channel.send(`SPECIAL SOUND ALERT! BWAAA BWAA BWAAAAA`);
         }
@@ -36,7 +30,6 @@ module.exports = {
         }
       }
 
-      //
       // guildTags
       // type: Collection
       // <guild snowflake, tags>
@@ -45,12 +38,11 @@ module.exports = {
       // type: Collection
       // <tag name, [soundIDs]>
 
-
       //If it's a tag.
       const tags = message.client.guildTags.get(message.guild.id) || {};  //Get the tags object from the guild ID.
       soundFilePaths = tags[args[0]] || []; //If the tag has soundFilePaths, get them. Otherwise return empty list.
 
-      if(soundFilePaths.length){  //If soundFilePaths is filled.
+      if(soundFilePaths.length){
         const soundFilePath = soundFilePaths[Math.floor(Math.random()*soundFilePaths.length)];
         let sound = message.client.filePathSounds.get(soundFilePath);
         PlayFile(message, sound.filePath);

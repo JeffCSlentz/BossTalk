@@ -2,6 +2,7 @@ module.exports = {
     name: 'untag',
     description: 'Untag a sound or tag',
     usage: '[soundID/tag]',
+    guildOnly: true,
     execute(message, args) {
       //If not in a guild, return;
       if(!message.guild) return;

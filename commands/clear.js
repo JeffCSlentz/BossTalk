@@ -6,6 +6,7 @@ module.exports = {
     name: 'clear',
     description: 'Clear out a creature\'s expansions and locations and all its sounds or remove a specific location from a creature.',
     usage: '[creature] (opt)[location]',
+    guildOnly: false,
     execute(message, args) {
       if (args.length === 1){
         arg = args[0].toLowerCase();

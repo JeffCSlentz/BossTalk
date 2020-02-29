@@ -2,7 +2,6 @@ const fs = require('fs');
 const utility = require('./utility.js');
 const Discord = require('discord.js');
 module.exports = {
-
     clearLocationFromCreature(message, creatureName){
       let creature = message.client.creatureSounds.get(creatureName);
       let position = creature.positions[0];
@@ -133,13 +132,11 @@ module.exports = {
     AddBrowniePoints(message, amount){
       localAddBrowniePoints(message, amount);
     },
-
     addCreatureToData(client, creatureName){
       addCreatureToAllSounds(client, creatureName);
       addCreatureToCategorySounds(client, creatureName);
       addCreatureToFilePathSounds(client, creatureName);
     }
-
 };
 
 //Adds a creature object to allSounds collection.

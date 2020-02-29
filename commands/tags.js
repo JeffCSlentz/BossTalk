@@ -1,6 +1,7 @@
 module.exports = {
     name: 'tags',
     description: 'Get a list of tags.',
+    guildOnly: true,
     execute(message, args) {
       //If not in a guild, return;
       if(!message.guild) return;
