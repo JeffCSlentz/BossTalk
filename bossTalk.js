@@ -18,7 +18,7 @@ const Position =        require('./utility/classes/Position.js');
 const Sound =           require('./utility/classes/Sound.js').default;
 
 //Persistent Data
-client.guildTags = new Enmap({provider: new EnmapLevel({name: "guildTags"})});
+client.guildTags = new Discord.Collection();
 client.commands = new Discord.Collection();
 client.volume = 0.5;
 client.creatureSounds = new Discord.Collection(); //key = creatureName, value = sounds[]
@@ -156,10 +156,21 @@ function loadCreatures(){
   }
 }
 
+function loadGuildTags(){
+  try {
+    client.creatureSounds = readMapSync(`${dataFolder}/creatureSounds.json`);
+    console.log("Found creatureSounds.json")
+  }
+  catch(error) {
+    console.log("No file found, starting from empty creatureSounds.");
+  }
+}
+
 function startup(){
   loadCommands();
   loadFiles();
   loadCreatures();
+  loadGuildTags();
   client.login(token);
 }
 
