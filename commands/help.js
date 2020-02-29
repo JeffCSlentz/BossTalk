@@ -5,6 +5,7 @@ module.exports = {
     description: 'List all of my commands or info about a specific command.',
     aliases: ['commands'],
     usage: '[command name]',
+    guildOnly: false,
     cooldown: 5,
     execute(message, args) {
       const { commands } = message.client;
@@ -31,7 +32,7 @@ module.exports = {
         if (command.description) data.push(`**Description:** ${command.description}`);
         if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
         if (command.usage) data.push(`**Usage:** ${prefix}${command.name} ${command.usage}`);
-        if (command.colldown) data.push(`**Cooldown:** ${command.cooldown || 3} second(s)`);
+        if (command.cooldown) data.push(`**Cooldown:** ${command.cooldown} second(s)`);
       }
 
       message.author.send(data, { split: true })

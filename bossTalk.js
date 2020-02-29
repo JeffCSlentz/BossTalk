@@ -31,12 +31,13 @@ const creaturesFolder = './sounds/creature';
 const creatureFiles = fs.readdirSync(creaturesFolder);
 //#endregion
 
-function readMapSync(folder){
+//Param = filePath
+function getDiscordCollectionFromJSON(filePath){
   try {
-    return new Discord.Collection(JSON.parse(fs.readFileSync(folder)));
+    return new Discord.Collection(JSON.parse(fs.readFileSync(filePath)));
   }
   catch(error) {
-    console.log("readmapSync went wrong")
+    console.log("getDiscordCollectionFromJSON went wrong")
     console.log(error)
     throw error;
   }
@@ -56,7 +57,7 @@ function loadFiles(){
 
   for (item of dataList){
     try {
-      client[item] = readMapSync(`${dataFolder}/${item}.json`);
+      client[item] = getDiscordCollectionFromJSON(`${dataFolder}/${item}.json`);
       console.log(`Found ${item}.json`)
     }
     catch(error) {
@@ -66,7 +67,6 @@ function loadFiles(){
 }
 
 function loadCreatures(){
-  let first = false;
   let uniqueSoundID = 1;
 
   //Iterate through all creature folders, building up runtime data OR adding new creatures not yet seen.
@@ -75,7 +75,6 @@ function loadCreatures(){
     //If the creatureSounds collection already has this creature, add it to our runtime sounds.
     if (client.creatureSounds.has(folder)){
       if(client.creatureSounds.get(folder).sounds.length > 0){  //Check if this folder has any sound files.
-        
         let sounds = client.creatureSounds.get(folder).sounds;
         //Remake all creature's sound ID's.
         for(sound of sounds){
@@ -83,15 +82,7 @@ function loadCreatures(){
           client.numSounds = uniqueSoundID;
           uniqueSoundID++;
         }
-
         data.addCreatureToData(client, folder);
-
-        /*
-        //Add this creature to allSounds and categorySounds collection.
-        addCreatureToAllSounds(folder);
-        addCreatureToCategorySounds(folder);
-        addCreatureToFilePathSounds(folder);
-        */
       } else {
         console.log(`skipped ${folder}`);
       }
@@ -141,21 +132,16 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
-  client.tempTime = Date.now();
-
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
+  client.tempTime = Date.now();
   console.log(`Cmd: T=${client.tempTime}, by ${message.author.username}: "${message.content}"`);
 
-
   let args = message.content.slice(prefix.length).split(' ');
-  console.log(args);
   let command = args.shift().toLowerCase();
-
+  
   if (!client.commands.has(command)){
-
     args = [command];
-    console.log(args);
     command = "play";
   }
 

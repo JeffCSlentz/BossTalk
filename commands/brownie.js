@@ -2,7 +2,7 @@ module.exports = {
     name: 'brownie',
     description: 'Get information about the BROWNIE POINT LEADERBOARD ( ͡° ͜ʖ ͡°)',
     usage: 'none/[user]',
-    guildOnly: true,
+    guildOnly: false,
     execute(message, args) {
       let data = [];
 

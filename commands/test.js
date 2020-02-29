@@ -1,6 +1,7 @@
 module.exports = {
     name: 'test',
     description: 'Testing commands baka!',
+    guildOnly: true,
     execute(message, args) {
       message.channel.send('test acknowledged.');
       let fileName = "sounds/test/test31.ogg";

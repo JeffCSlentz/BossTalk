@@ -3,10 +3,10 @@ const rewardNames = Object.keys(require('./../data/rewardsData.js').rewards);
 module.exports = {
     name: 'rewards',
     description: 'Find out about rewards!',
+    guildOnly: false,
     execute(message, args) {
       if (message.guild.available){
         data = [];
-
 
         let browniePoints = 0;
         if(message.client.browniePoints.has(message.author.id)){

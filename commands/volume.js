@@ -2,6 +2,7 @@ module.exports = {
     name: 'volume',
     description: 'Set the volume of playback.',
     usage: '[0-1]',
+    guildOnly: true,
     execute(message, args) {
       if(!message.guild) return;
       if (!args.length || args[0] < 0 || args[0] > 1) {
