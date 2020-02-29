@@ -9,7 +9,6 @@ module.exports = {
     usage: '[expansion] [dungeon] [boss] [number]',
     guildOnly: true,
     execute(message, args) {
-      //if(!message.guild) return;
       if(!args.length) return;
       if(!message.client.voiceConnections.has(message.guild.id)){
         return message.channel.send(`I can't play sounds if i'm not in a channel (´･ω･\`)`);

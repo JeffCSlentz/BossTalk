@@ -6,8 +6,7 @@ module.exports = {
     usage: '[soundNumber] [tag]',
     guildOnly: true,
     async execute(message, args) {
-      //If not in a guild or not enough arguments, return.
-      //if(!message.guild) return;
+      //If not enough arguments, return.
       if (args.length < 2) {
         return message.channel.send('Include [soundNumber] [tag]');
       }

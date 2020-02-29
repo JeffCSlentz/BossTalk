@@ -3,7 +3,6 @@ module.exports = {
     description: 'Leave any voice channel I\'m in',
     guildOnly: true,
     execute(message, args) {
-      //if (!message.guild) return;
       if (message.guild.available){
         let left = false;
         const connections = message.client.voiceConnections.array();
