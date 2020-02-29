@@ -55,31 +55,18 @@ function loadCommands(){
 
 //Load runtime data from persistent data.
 function loadFiles(){
-  try {
-    client.creatureSounds = readMapSync(`${dataFolder}/creatureSounds.json`);
-    console.log("Found creatureSounds.json")
-  }
-  catch(error) {
-    console.log("No file found, starting from empty creatureSounds.");
-  }
-
-  //Load in user Favorites
-  /*
-  try {
-    client.userFavorites = readMapSync(`${dataFolder}/userFavorites.json`);
-    console.log("Found userFavorites.json")
-  }
-  catch(error) {
-    console.log("No file found, starting from empty userFavorites.");
-  }*/
-
-
-  try {
-    client.browniePoints = readMapSync(`${dataFolder}/browniePoints.json`);
-    console.log("Found browniePoints.json")
-  }
-  catch(error) {
-    console.log("No file found, starting from empty browniePoints.");
+  dataList = [{data:client.creatureSounds, name:"creatureSounds"},
+  {data:client.guildTags, name:"guildTags"},
+  {data:client.browniePoints, name:"browniePoints"}]
+  
+  for (item in dataList){
+    try {
+      item.data = readMapSync(`${dataFolder}/${item.name}.json`);
+      console.log(`Found ${item.name}.json`)
+    }
+    catch(error) {
+      console.log(`No file found, starting from empty ${item.name}.`);
+    }
   }
 }
 
@@ -145,13 +132,7 @@ function loadCreatures(){
 }
 
 function loadGuildTags(){
-  try {
-    client.creatureSounds = readMapSync(`${dataFolder}/creatureSounds.json`);
-    console.log("Found creatureSounds.json")
-  }
-  catch(error) {
-    console.log("No file found, starting from empty creatureSounds.");
-  }
+  
 }
 
 function startup(){
