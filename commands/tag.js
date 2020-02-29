@@ -8,32 +8,20 @@ module.exports = {
       //If not in a guild or not enough arguments, return.
       if(!message.guild) return;
       if (args.length < 2) {
-        return message.channel.send('Include [creature] [tag]');
+        return message.channel.send('Include [soundNumber] [tag]');
       }
 
-      //temporary fuck-up fixing.
-
-
-      //TODO replace with enmap
       //If soundID not found, return.
-
-      //TODO re-enable
       if(!message.client.allSounds.has(parseInt(args[0]))){
         return message.channel.send(`I couldn't find that sound.`)
       }
 
-      /*TODO un-enable
-      if(!message.client.filePathSounds.has(args[0])){
-        return message.channel.send(`I couldn't find that sound.`);
-      }*/
-
       //Get arguments from user's message.
-      //const soundID = parseInt(args[0]);
       const soundID = parseInt(args[0]);
       const tag = args[1];
 
       //Gets guilds tags.
-      const tags = message.client.guildTags.get(message.guild.id) || {}; //These are objects because enmaps require them to be.
+      const tags = message.client.guildTags.get(message.guild.id) || {};
 
 
       //Gets list of sounds that has this tag.
@@ -49,7 +37,6 @@ module.exports = {
       console.log(`tag.js 53: Added ${soundID} to ${tag}. This tag has sounds ${tags[tag]}`);
       message.client.guildTags.set(message.guild.id, tags);
 
-      //TODO change this to enmaps
       dataManip.AddBrowniePoints(message, 5);
       return message.channel.send(`Thanks for adding sound ${soundID} to ${tag}! You get 5 brownie points. ◕ ◡ ◕`);
     },
