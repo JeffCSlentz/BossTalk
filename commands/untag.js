@@ -5,7 +5,7 @@ module.exports = {
     guildOnly: true,
     execute(message, args) {
       //If not in a guild, return;
-      if(!message.guild) return;
+      //if(!message.guild) return;
 
       //It needs at least one argument.
       if (!args.length) {

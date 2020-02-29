@@ -4,7 +4,7 @@ module.exports = {
     usage: '[channel name/ID]',
     guildOnly: true,
     execute(message, args) {
-      if (!message.guild) return;
+      //if (!message.guild) return;
       if (message.guild.available){
         //Attempt to join the user's channel
         if(!args.length && message.member.voiceChannel){

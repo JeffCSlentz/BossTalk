@@ -4,7 +4,7 @@ module.exports = {
     guildOnly: true,
     execute(message, args) {
       //If not in a guild, return;
-      if(!message.guild) return;
+      //if(!message.guild) return;
 
       const tags = message.client.guildTags.get(message.guild.id) || {};
 
