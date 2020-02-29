@@ -1,6 +1,10 @@
 const fs = require('fs');
 const utility = require('./utility.js');
 const Discord = require('discord.js');
+const Creature = require('./classes/Creature.js');
+const Position = require('./classes/Position.js');
+const Sound = require('./classes/Sound.js').default;
+
 module.exports = {
     clearLocationFromCreature(message, creatureName){
       let creature = message.client.creatureSounds.get(creatureName);
