@@ -3,6 +3,7 @@ module.exports = {
     description: 'Set the volume of playback.',
     usage: '[0-1]',
     guildOnly: true,
+    authorOnly: false,
     execute(message, args) {
       if (!args.length || args[0] < 0 || args[0] > 1) {
         return message.channel.send(`Choose a volume between 0 and 1, ${message.author}!`);

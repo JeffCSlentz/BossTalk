@@ -1,12 +1,11 @@
 const dataManip = require('./../utility/dataManipulation.js');
-const Position = require('./../utility/classes/Position.js');
-const utility = require('./../utility/utility.js');
 
 module.exports = {
     name: 'clear',
     description: 'Clear out a creature\'s expansions and locations and all its sounds or remove a specific location from a creature.',
     usage: '[creature] (opt)[location]',
     guildOnly: false,
+    authorOnly: true,
     execute(message, args) {
       if (args.length === 1){
         arg = args[0].toLowerCase();
@@ -38,5 +37,5 @@ module.exports = {
         return message.channel.send("Too many arguments.");
       }
 
-    },
+    }
 };

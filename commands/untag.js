@@ -3,6 +3,7 @@ module.exports = {
     description: 'Untag a sound or tag',
     usage: '[soundID/tag]',
     guildOnly: true,
+    authorOnly: false,
     execute(message, args) {
       //It needs at least one argument.
       if (!args.length) {

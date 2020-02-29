@@ -6,6 +6,7 @@ module.exports = {
     description: 'Help me out by carefully giving a creature or sound some information. Don\'t fuck it up, it\'s a pain in the ass to fix.',
     usage: '[creature] [expansion] [location] OR [soundID] [expansion] [location] OR [soundIDstart] [soundIDend] [expansion] [location] OR ["file"] [filename] [expansion] [location]',
     guildOnly: false,
+    authorOnly: true,
     execute(message, args) {
       //If the first argument is "file"
       if(args[0] === `file`){

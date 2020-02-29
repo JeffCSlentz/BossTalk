@@ -15,21 +15,14 @@ module.exports = {
       }
       return total;
     },
-    getCommandFromMessage(message){
-      let command = splitUpMessageIntoArray(message).slice(0,1)[0];
+    getParamsFromMessage(message){
+      let args = message.content.slice(message.client.prefix.length).split(' ');
+      let command = args.shift().toLowerCase();
       if (!message.client.commands.has(command)){
         args = [command];
+        console.log(args);
         command = "play";
       }
-      return message.client.commands.get(command);
-    },
-    getArgsFromMessage(message){
-      args = splitUpMessageIntoArray(message).slice(1);
-      return args;
+      return {args:args, command:message.client.commands.get(command)}
     }
 };
-
-function splitUpMessageIntoArray(message){
-  prefix = message.client.prefix;
-  return message.content.toLowerCase().slice(prefix.length).split(' ')
-}

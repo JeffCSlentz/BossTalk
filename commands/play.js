@@ -8,11 +8,10 @@ module.exports = {
     description: 'Play a sound!',
     usage: '[expansion] [dungeon] [boss] [number]',
     guildOnly: true,
+    authorOnly: false,
+    inVoiceOnly: true,
     execute(message, args) {
       if(!args.length) return;
-      if(!message.client.voiceConnections.has(message.guild.id)){
-        return message.channel.send(`I can't play sounds if i'm not in a channel (´･ω･\`)`);
-      }
 
       //If it's a reward
       if (rewardNames.includes(args[0])){
@@ -63,11 +62,8 @@ module.exports = {
 
       //If it's a sound ID
       if (message.client.allSounds.has(soundID)){
-
         let sound = message.client.allSounds.get(soundID)
-        const fileName = sound.filePath;
-
-        PlayFile(message, fileName);
+        PlayFile(message, sound.filePath);
         return message.channel.send(stringSound(message, sound));
       }
       else{

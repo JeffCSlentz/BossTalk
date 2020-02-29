@@ -5,6 +5,7 @@ module.exports = {
     description: 'Tag a sound with a special word to be used with !play',
     usage: '[soundNumber] [tag]',
     guildOnly: true,
+    authorOnly: false,
     async execute(message, args) {
       //If not enough arguments, return.
       if (args.length < 2) {

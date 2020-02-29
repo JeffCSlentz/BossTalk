@@ -4,6 +4,7 @@ module.exports = {
     description: 'Get information about an expansion, location, creature, or sound.',
     usage: '[expansion/location/creature/soundID]',
     guildOnly: false,
+    authorOnly: false,
     execute(message, args) {
       if (!args.length){
         return message.channel.send('Get information about an expansion, location, creature, or sound.');
