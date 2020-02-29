@@ -1,21 +1,19 @@
 //#region Variables
-
 //Discord
-const fs =              require('fs');
+const fs = require('fs');
 const {prefix, token} = require('./config.json');
-const Discord =         require('discord.js');
+const Discord = require('discord.js');
 const client = new Discord.Client();
 
 //Third-Party
-const Enmap =           require('enmap');
-const EnmapLevel =      require('enmap-level');
+const Enmap = require('enmap');
+const EnmapLevel = require('enmap-level');
 
 //First-Party
-const data =            require('./utility/dataManipulation.js')
-//const utility =         require('./utility/utility.js')
-const Creature =        require('./utility/classes/Creature.js');
-const Position =        require('./utility/classes/Position.js');
-const Sound =           require('./utility/classes/Sound.js').default;
+const data = require('./utility/dataManipulation.js')
+const Creature = require('./utility/classes/Creature.js');
+const Position = require('./utility/classes/Position.js');
+const Sound = require('./utility/classes/Sound.js').default;
 
 //Persistent Data
 client.guildTags = new Discord.Collection();
@@ -34,18 +32,8 @@ client.tempTime = 0;
 const dataFolder = './data';
 const commandsFolder = './commands';
 const creaturesFolder = './sounds/creature';
-const uselessCreaturesFolder = './sounds/useless';
-
-const commandFiles = fs.readdirSync(commandsFolder);
 const creatureFiles = fs.readdirSync(creaturesFolder);
-
 //#endregion
-
-//TODO remove these and replace with enmaps
-function writeMapSync(folder, map){
-  writeFileSync(folder, JSON.stringify([...map]));
-}
-
 
 function readMapSync(folder){
   try {
