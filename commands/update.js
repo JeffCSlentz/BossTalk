@@ -7,7 +7,6 @@ module.exports = {
     usage: '[creature] [expansion] [location] OR [soundID] [expansion] [location] OR [soundIDstart] [soundIDend] [expansion] [location] OR ["file"] [filename] [expansion] [location]',
     guildOnly: false,
     execute(message, args) {
-
       //If the first argument is "file"
       if(args[0] === `file`){
 

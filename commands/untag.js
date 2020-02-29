@@ -4,9 +4,6 @@ module.exports = {
     usage: '[soundID/tag]',
     guildOnly: true,
     execute(message, args) {
-      //If not in a guild, return;
-      //if(!message.guild) return;
-
       //It needs at least one argument.
       if (!args.length) {
         return;
