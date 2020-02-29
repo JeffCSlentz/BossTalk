@@ -9,7 +9,7 @@ module.exports = {
     usage: '[expansion] [dungeon] [boss] [number]',
     guildOnly: true,
     execute(message, args) {
-      if(!message.guild) return;
+      //if(!message.guild) return;
       if(!args.length) return;
       if(!message.client.voiceConnections.has(message.guild.id)){
         return message.channel.send(`I can't play sounds if i'm not in a channel (´･ω･\`)`);
@@ -56,7 +56,7 @@ module.exports = {
       if (args[0] == "random" || args[0] == "rand" || args[0] == 'r'){
         soundID = Math.floor(Math.random() * message.client.numSounds) + 1;
       } else if (!Number.isInteger(parseInt(args[0]))){
-          return message.channel.send(`I don't recognize that tag or soundID, ${message.author}! (◕﹏◕✿)`);
+          return message.channel.send(`I don't recognize **${args[0]}** as a tag or soundID, ${message.author}! (◕﹏◕✿)`);
       }
       else {
         soundID = parseInt(args[0]);

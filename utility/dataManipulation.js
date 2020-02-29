@@ -156,7 +156,7 @@ module.exports = {
       }
     },
     loadCommands(client, commandsFolder){
-      for(const file of fs.readdirSync(`./${commandsFolder}`)){
+      for(const file of fs.readdirSync(`${commandsFolder}`)){
         const command = require(`../commands/${file}`);
         client.commands.set(command.name, command);
       }

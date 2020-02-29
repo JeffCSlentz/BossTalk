@@ -7,9 +7,6 @@ const client = new Discord.Client();
 
 //First-Party
 const data = require('./utility/dataManipulation.js')
-const Creature = require('./utility/classes/Creature.js');
-const Position = require('./utility/classes/Position.js');
-const Sound = require('./utility/classes/Sound.js').default;
 
 //Persistent Data
 client.guildTags = new Discord.Collection();
@@ -26,7 +23,7 @@ client.tempTime = 0;
 
 //constants
 const dataFolder = './data';
-const commandsFolder = 'commands';
+const commandsFolder = './commands';
 const creaturesFolder = './sounds/creature';
 const creatureFiles = fs.readdirSync(creaturesFolder);
 //#endregion
@@ -35,7 +32,6 @@ function startup(){
   data.loadCommands(client, commandsFolder);
   data.loadFiles(client, dataFolder, ["creatureSounds", "guildTags", "browniePoints"])
   data.checkForNewCreatures(client, creatureFiles);
-  
   client.login(token);
 }
 
@@ -60,7 +56,13 @@ client.on('message', message => {
   }
 
   try {
-    client.commands.get(command).execute(message, args);
+    command = client.commands.get(command)
+    if(command.guildOnly && message.channel.type == "text"){
+      command.execute(message, args)
+    }
+    else{
+      message.channel.send("I can only do that in a server.")
+    }
   }
   catch (error) {
       console.error(error);
