@@ -5,10 +5,6 @@ const {prefix, token} = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
-//Third-Party
-const Enmap = require('enmap');
-const EnmapLevel = require('enmap-level');
-
 //First-Party
 const data = require('./utility/dataManipulation.js')
 const Creature = require('./utility/classes/Creature.js');
