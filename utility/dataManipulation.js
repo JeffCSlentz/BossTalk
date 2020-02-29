@@ -122,8 +122,6 @@ module.exports = {
         return `Couldn't find sound ${soundID}`;
       }
     },
-
-
     writeGuildTags(message){
       console.log(`49: dataManipulation.js`);
       console.log(`${JSON.stringify([...message.client.guildTags])}`);
