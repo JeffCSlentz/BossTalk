@@ -77,18 +77,13 @@ module.exports = {
 };
 
 function PlayFile(message, fileName){
-
-  console.log(`Played ${fileName} after ${Date.now() - message.client.tempTime} ms.`);
   const connection = message.client.voiceConnections.get(message.guild.id);
-  console.log(`Paused Time: ${connection.player.streamingData.pausedTime}`);
-
-
   const dispatcher = connection.playFile(fileName);
   dispatcher.setVolume(message.client.volume); // Set the volume to client.volume
   dispatcher.on(`start`, () => {
      connection.player.streamingData.pausedTime = 0;
   });
-  console.log(`Played sound ${fileName}`);
+  console.log(`Played ${fileName} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
 }
 
 function stringSound(message, sound){
