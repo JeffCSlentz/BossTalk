@@ -31,103 +31,10 @@ const creaturesFolder = './sounds/creature';
 const creatureFiles = fs.readdirSync(creaturesFolder);
 //#endregion
 
-/*
-//Param = filePath
-function getDiscordCollectionFromJSON(filePath){
-  try {
-    return new Discord.Collection(JSON.parse(fs.readFileSync(filePath)));
-  }
-  catch(error) {
-    console.log("getDiscordCollectionFromJSON went wrong")
-    console.log(error)
-    throw error;
-  }
-}*/
-
-/*
-//Get commands from the commands folder.
-function loadCommands(){
-  for(const file of fs.readdirSync(commandsFolder)){
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.name, command);
-  }
-}*/
-
-/*
-//Load runtime data from persistent data.
-function loadFiles(dataList){
-  dataList = ["creatureSounds", "guildTags", "browniePoints"]
-
-  for (item of dataList){
-    try {
-      client[item] = getDiscordCollectionFromJSON(`${dataFolder}/${item}.json`);
-      console.log(`Found ${item}.json`)
-    }
-    catch(error) {
-      console.log(`No file found, starting from empty ${item}.`);
-    }
-  }
-}*/
-
-/*
-function loadCreatures(){
-  let uniqueSoundID = 1;
-
-  //Iterate through all creature folders, building up runtime data OR adding new creatures not yet seen.
-  for (const folder of creatureFiles)
-  {
-    //If the creatureSounds collection already has this creature, add it to our runtime sounds.
-    if (client.creatureSounds.has(folder)){
-      if(client.creatureSounds.get(folder).sounds.length > 0){  //Check if this folder has any sound files.
-        let sounds = client.creatureSounds.get(folder).sounds;
-        //Remake all creature's sound ID's.
-        for(sound of sounds){
-          sound.id = uniqueSoundID;
-          client.numSounds = uniqueSoundID;
-          uniqueSoundID++;
-        }
-        data.addCreatureToData(client, folder);
-      } else {
-        console.log(`skipped ${folder}`);
-      }
-
-    }
-    //Otherwise, create this creature.
-    else{
-      throw "what";
-      let creature = new Creature(folder, [new Position("", "")], []);
-      let soundFiles = readdirSync(`${creaturesFolder}/${folder}`);
-      let bannedWords = ["wound", "attack", "crit", "battleshout"];
-
-      // Add sounds to this new creature, ignoring bad ones, and incrementing uniqueSoundID counter.
-      console.log(`Creating ${folder}`);
-      for(const file of soundFiles){
-        if (bannedWords.some(word => file.includes(word))){
-        }
-        else{
-          console.log(` Adding sound ${file}`);
-          let sound = new Sound(uniqueSoundID, "", new Position("", ""), `${creaturesFolder}/${folder}/${file}`, folder);
-          client.numSounds = uniqueSoundID;
-          creature.sounds.push(sound);
-          uniqueSoundID++;
-        }
-      }
-
-      //Add this creature to the creatureSounds collection.
-      client.creatureSounds.set(creature.name, creature);
-      addCreatureToData(client, folder);
-
-    }
-  }
-}*/
-
 function startup(){
   data.loadCommands(client, commandsFolder);
-  //loadCommands();
   data.loadFiles(client, dataFolder, ["creatureSounds", "guildTags", "browniePoints"])
-  //loadFiles();
   data.checkForNewCreatures(client, creatureFiles);
-  //loadCreatures();
   
   client.login(token);
 }
