@@ -4,6 +4,7 @@ module.exports = {
     name: 'rewards',
     description: 'Find out about rewards!',
     guildOnly: false,
+    authorOnly: false,
     execute(message, args) {
       if (message.guild.available){
         data = [];

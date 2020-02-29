@@ -1,13 +1,14 @@
 //#region Variables
 //Discord
 const fs = require('fs');
-const {prefix, token} = require('./config.json');
+const {prefix, token, authorID} = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
 //First-Party
 const data = require('./utility/dataManipulation.js')
 const utility = require('./utility/utility.js')
+const validate = require('./utility/validator.js').validate;
 
 //Persistent Data
 client.guildTags = new Discord.Collection();
@@ -21,7 +22,11 @@ client.browniePoints = new Discord.Collection();  //key = userID,        value =
 client.numSounds = 0;
 client.updates = [];
 client.messageReceivedTime = 0;
-client.prefix = prefix;   //REPLACE WITH GUILDSPECIFIC PREFIXES
+client.prefix = prefix;     //REPLACE WITH GUILDSPECIFIC PREFIXES
+client.authorID = authorID  //Is this the best way?
+
+//Discord.Permissions.FLAGS.ADMINISTRATOR
+//if(message.member.hasPermission(Discord.Permissions.FLAGS.ADMINISTRATOR))
 
 //constants
 const dataFolder = './data';
@@ -34,7 +39,6 @@ function initialize(){
   data.loadCommands(client, commandsFolder);
   data.loadFiles(client, dataFolder, ["creatureSounds", "guildTags", "browniePoints"])
   data.checkForNewCreatures(client, creatureFiles);
-
 }
 
 initialize();
@@ -51,11 +55,37 @@ client.on('message', message => {
   client.messageReceivedTime = new Date(Date.now()); 
   console.log(`Command: T=${client.messageReceivedTime.toTimeString()}, by ${message.author.username}: "${message.content}"`);
 
-  command = utility.getCommandFromMessage(message);
-  args = utility.getArgsFromMessage(message);
+  params = utility.getParamsFromMessage(message);
+  command = params.command;
+  args = params.args;
 
   try {
-    if(command.guildOnly && message.channel.type == "text"){
+    validation = validate(message, args, command);
+    if(validation.isValid){
+      command.execute(message, args)
+    }
+    else if(validation.suggestion){
+      message.reply(validation.suggestion)
+    }
+    else{
+      return;
+    }
+  }
+  catch (error) {
+      console.error(error);
+      message.reply('There was an error trying to execute that command!');
+  }
+  /*
+  try {
+    if(command.authorOnly == true && message.author.id == authorID){
+      console.log("Author only!")
+      command.execute(message, args)
+    }
+    else if (command.authorOnly == true && message.author.id != authorID){
+      return;
+    }
+    else if(command.guildOnly && message.channel.type == "text"){
+      console.log("Regular!")
       command.execute(message, args)
     }
     else{
@@ -65,7 +95,7 @@ client.on('message', message => {
   catch (error) {
       console.error(error);
       message.reply('There was an error trying to execute that command!');
-  }
+  }*/
 });
 
 client.on('error', console.error);
