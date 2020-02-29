@@ -7,6 +7,7 @@ const client = new Discord.Client();
 
 //First-Party
 const data = require('./utility/dataManipulation.js')
+const utility = require('./utility/utility.js')
 
 //Persistent Data
 client.guildTags = new Discord.Collection();
@@ -19,7 +20,8 @@ client.filePathSounds = new Discord.Collection();
 client.browniePoints = new Discord.Collection();  //key = userID,        value = numBrowniePoints
 client.numSounds = 0;
 client.updates = [];
-client.tempTime = 0;
+client.messageReceivedTime = 0;
+client.prefix = prefix;   //REPLACE WITH GUILDSPECIFIC PREFIXES
 
 //constants
 const dataFolder = './data';
@@ -28,15 +30,17 @@ const creaturesFolder = './sounds/creature';
 const creatureFiles = fs.readdirSync(creaturesFolder);
 //#endregion
 
-function startup(){
+function initialize(){
   data.loadCommands(client, commandsFolder);
   data.loadFiles(client, dataFolder, ["creatureSounds", "guildTags", "browniePoints"])
   data.checkForNewCreatures(client, creatureFiles);
-  client.login(token);
+
 }
 
-startup();
+initialize();
+client.login(token);
 
+//#region Client event handlers
 client.on('ready', () => {
   console.log('Ready!');
 });
@@ -44,19 +48,13 @@ client.on('ready', () => {
 client.on('message', message => {
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-  client.tempTime = Date.now();
-  console.log(`Cmd: T=${client.tempTime}, by ${message.author.username}: "${message.content}"`);
+  client.messageReceivedTime = new Date(Date.now()); 
+  console.log(`Command: T=${client.messageReceivedTime.toTimeString()}, by ${message.author.username}: "${message.content}"`);
 
-  let args = message.content.slice(prefix.length).split(' ');
-  let command = args.shift().toLowerCase();
-  
-  if (!client.commands.has(command)){
-    args = [command];
-    command = "play";
-  }
+  command = utility.getCommandFromMessage(message);
+  args = utility.getArgsFromMessage(message);
 
   try {
-    command = client.commands.get(command)
     if(command.guildOnly && message.channel.type == "text"){
       command.execute(message, args)
     }
@@ -71,12 +69,15 @@ client.on('message', message => {
 });
 
 client.on('error', console.error);
+//#endregion
 
-client.on('disconnect', closeEvent => {
-  for(const connection of client.voiceConnections.array()){
-    connection.leave();
+//#region Interrupt handler
+process.on('SIGINT', function() {
+  console.log("Caught interrupt signal");
+
+  for(const connection of client.voiceConnections.values()){
+    connection.disconnect();
   }
+  process.exit();
 });
-
-
-
+//#endregion

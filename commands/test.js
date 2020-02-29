@@ -6,7 +6,7 @@ module.exports = {
       message.channel.send('test acknowledged.');
       let fileName = "sounds/test/test31.ogg";
 
-      console.log(`Played ${fileName} after ${Date.now() - message.client.tempTime} ms.`);
+      console.log(`Played ${fileName} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
       const connection = message.client.voiceConnections.get(message.guild.id);
       console.log(`Paused Time: ${connection.player.streamingData.pausedTime}`);
 
