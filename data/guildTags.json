@@ -1,0 +1,237 @@
+{
+    "248890462746836993": {
+      "urtall": [
+        "./sounds/creature/gnomefemalenerdynpc/gnomefemalenerdynpcgreeting01.ogg"
+      ],
+      "hello": [
+        "./sounds/creature/gnomefemalehappynpc/gnomefemalehappynpcfarewell02.ogg",
+        "./sounds/creature/undeadfemalestandardnpc/undeadfemalestandardnpcgreeting01.ogg",
+        "./sounds/creature/sunasilentstrike/vo_suna_farewell_02.ogg"
+      ],
+      "nuts": [
+        "./sounds/creature/celestine_of_the_harvest/vo_703_celestine_of_the_harvest_25.ogg"
+      ],
+      "deceiving": [
+        "./sounds/creature/archmage_vargoth/vo_703_archmage_vargoth_06.ogg"
+      ],
+      "lol": [
+        "./sounds/creature/drunkenpandaren4/vo_sb_drunk04_laugh04.ogg",
+        "./sounds/creature/glovall/vo_qe_vj_glovall_cavern04.ogg./sounds/creature/kaz/vo_60_kaz_farewell_02.ogg"
+      ],
+      "sky": [
+        "./sounds/creature/genericarakkoaoutcast/vo_60_spires_outcast_arakkoa_farewell_04.ogg"
+      ],
+      "bombsquad": [
+        "./sounds/creature/neesa/vo_60_id_neesa_death.ogg"
+      ],
+      "greatoutdoors": [
+        "./sounds/creature/drunkenpandaren5/vo_sb_drunk05_laugh05.ogg"
+      ],
+      "thinkgood": [
+        "./sounds/creature/captainkoramar/vo_60_id_koramar_dialogue10.ogg"
+      ],
+      "electricjustice": [
+        "./sounds/creature/elderstonebark/ur_stonebark_death01.ogg"
+      ],
+      "bonestorm": [
+        "./sounds/creature/lordmarrowgar/ic_marrowgar_bs03.ogg"
+      ],
+      "hi": [
+        "./sounds/creature/dryad/dryadaggroa.ogg",
+        "./sounds/creature/thisalee_crow/vo_72_thisalee_crow_16_f.ogg"
+      ],
+      "patheticmagic": [
+        "./sounds/creature/silver_hand_knight/vo_703_silver_hand_knight_01.ogg"
+      ],
+      "risemountains": [
+        "./sounds/creature/tectus/vo_60_hmr_tectus_spell_01.ogg"
+      ],
+      "youwilldie": [
+        "./sounds/creature/cthun/cthunyouarealready.ogg"
+      ],
+      "zugzug": [
+        "./sounds/creature/orcmaleguardnpc/orcmaleguardnpcfarewell05.ogg"
+      ],
+      "xtno": [
+        "./sounds/creature/xt002deconstructor/ur_xt002_heartclose01.ogg"
+      ],
+      "goodbye": [
+        "./sounds/creature/gnomecrew02/vo_qe_vj_gnomecrew02_alliancesub04.ogg",
+        "./sounds/creature/algalontheobserver/ur_algalon_summon02.ogg",
+        "./sounds/creature/humanfemalestandardnpc/humanfemalestandardnpcvendor03.ogg",
+        "./sounds/creature/thisalee_crow/vo_72_thisalee_crow_18_f.ogg"
+      ],
+      "ready": [
+        "./sounds/creature/calydus/vo_703_calydus_36.ogg"
+      ],
+      "shadow": [
+        "./sounds/creature/undeadfemalemagicnpc/undeadfemalemagicnpcpissed05.ogg"
+      ],
+      "zenith": [
+        "./sounds/creature/priestess_lunaspyre/vo_72_priestess_lunaspyre_05_f.ogg"
+      ],
+      "rawr": [
+        "./sounds/creature/brightwing/vo_70_brightwing_pissed_01.ogg"
+      ],
+      "unexpectedcompany": [
+        "./sounds/creature/nexusprinceshafar/auch_nexprince_aggro01.ogg"
+      ],
+      "what": [
+        "./sounds/creature/utherlightbringer/hr_uther_queldelar04.ogg",
+        "./sounds/creature/npcgeist/npcgeistvendor04.ogg"
+      ],
+      "keepyour": [
+        "./sounds/creature/dwarfmalegrimnpc/dwarfmalegrimnpcvendor01.ogg"
+      ],
+      "tasty": [
+        "./sounds/creature/uulgyneth/vo_735_uulgyneth_death_04.ogg"
+      ],
+      "bye": [
+        "./sounds/creature/millhouse_manastorm/vo_703_millhouse_manastorm_30_m.ogg",
+        "./sounds/creature/nightborne_female_child/vo_703_nightborne_female_child_24.ogg",
+        "./sounds/creature/goblin01/vo_horde_zeppelin_goblin_01.ogg",
+        "./sounds/creature/goblincivf/vo_goblincivf_farewell06.ogg"
+      ],
+      "peppers": [
+        "./sounds/creature/unclegao/vo_gao_event_broken_dreams_09.ogg"
+      ],
+      "meds": [
+        "./sounds/creature/npcdraeneifemalenoble/npcdraeneifemalenoblegreeting07.ogg"
+      ],
+      "keepfiring": [
+        "./sounds/creature/captainkoramar/vo_60_id_koramar_dialogue04.ogg"
+      ],
+      "ungh": [
+        "./sounds/creature/yotnar/vo_70_yotnar_19.ogg",
+        "./sounds/creature/rexxar/vo_703_rexxar_05.ogg"
+      ],
+      "gogetem": [
+        "./sounds/creature/goblincivf/vo_goblincivf_farewell02.ogg"
+      ],
+      "whatsup": [
+        "./sounds/creature/goblincivf/vo_goblincivf_farewellaggro01.ogg",
+        "./sounds/creature/goblincivf/vo_goblincivf_farewellaggro04.ogg",
+        "./sounds/creature/goblincivf/vo_goblincivf_greeting01.ogg"
+      ],
+      "yeah": [
+        "./sounds/creature/goblincivf/vo_goblincivf_farewellaggro02.ogg"
+      ],
+      "yo": [
+        "./sounds/creature/goblincivf/vo_goblincivf_greeting05.ogg"
+      ],
+      "veryfunny": [
+        "./sounds/creature/goblincivf/vo_goblincivf_greetingaggro02.ogg"
+      ],
+      "embarassing": [
+        "./sounds/creature/goblincivf/vo_goblincivf_greetingaggro04.ogg"
+      ],
+      "wrong": [
+        "./sounds/creature/goblincivf/vo_goblincivf_pissed02.ogg"
+      ],
+      "pokethings": [
+        "./sounds/creature/goblincivf/vo_goblincivf_pissed04.ogg"
+      ],
+      "picklin": [
+        "./sounds/creature/goblincivf/vo_goblincivf_pissed06.ogg"
+      ],
+      "becareful": [
+        "./sounds/creature/goblincivf/vo_goblincivf_pissed07.ogg"
+      ],
+      "keepitreal": [
+        "./sounds/creature/goblincivf/vo_goblincivf_pissed08.ogg"
+      ],
+      "flipside": [
+        "./sounds/creature/goblincivf/vo_goblincivf_pissed09.ogg"
+      ],
+      "emptyinside": [
+        "./sounds/creature/the_lich_king/vo_72_the_lich_king_13_m.ogg"
+      ],
+      "breakyourself": [
+        "./sounds/creature/ozruk/vo_sc_ozruk_death04.ogg"
+      ],
+      "filthy": [
+        "./sounds/creature/trilliax/vo_701_trilliax_05.ogg"
+      ],
+      "fearhimself": [
+        "./sounds/creature/vandel/vo_72_vandel_02_m.ogg"
+      ],
+      "crunch": [
+        "./sounds/creature/mushan/mon_mushan_preaggro_05.ogg"
+      ],
+      "itsatrap": [
+        "./sounds/creature/navarrogg/vo_70_navarrogg_05.ogg"
+      ],
+      "awoo": [
+        "./sounds/creature/ripsnarl/vo_dm_ripsnarl_spell01.ogg"
+      ],
+      "secrets": [
+        "./sounds/creature/instructorchillheart/vo_scho_chillheart_slay_01.ogg"
+      ],
+      "bitch": [
+        "./sounds/creature/garrosh/vo_qe_garrosh_spevent03.ogg"
+      ],
+      "dooker": [
+        "./sounds/creature/onyxpanther/pet_onyxpanther_clickable07.ogg"
+      ],
+      "feelinstabby": [
+        "./sounds/creature/thisalee_crow/vo_72_thisalee_crow_03_f.ogg"
+      ],
+      "theseclaws": [
+        "./sounds/creature/thisalee_crow/vo_72_thisalee_crow_04_f.ogg"
+      ],
+      "gotyourback": [
+        "./sounds/creature/thisalee_crow/vo_72_thisalee_crow_12_f.ogg"
+      ],
+      "totheend": [
+        "./sounds/creature/arthas/cs_arthas_phase_6_03.ogg"
+      ],
+      "improvise": [
+        "./sounds/creature/mrrgria/vo_71_mrrgria_06_f.ogg"
+      ],
+      "god": [
+        "./sounds/creature/seerhao/vo_53_shaohao_emperor_18.ogg"
+      ],
+      "trinkets": [
+        "./sounds/creature/talonkingikiss/auch_ikiss_aggro01.ogg"
+      ],
+      "giveortake": [
+        "./sounds/creature/npcghoul/npcghoulvendor03.ogg"
+      ],
+      "dragonhawk": [
+        "./sounds/creature/zuljin/zuljinaggro.ogg"
+      ],
+      "nononononononono": [
+        "./sounds/creature/xt002deconstructor/ur_xt002_heartclose01.ogg"
+      ],
+      "tinycreatures": [
+        "./sounds/creature/foresttrollmale/foresttrollmaledeatha.ogg"
+      ],
+      "hounds": [
+        "./sounds/creature/horse/mhorsestand3a.ogg"
+      ],
+      "ugh": [
+        "./sounds/creature/gurtogg/vo_62_hfr_gurtogg_spell_03.ogg"
+      ],
+      "unexpected": [
+        "./sounds/creature/professorputricide/ic_putricide_festergutdead01.ogg"
+      ],
+      "greatnews": [
+        "/sounds/creature/professorputricide/ic_putricide_gasexp01.ogg"
+      ],
+      "jaraxxus": [
+        "./sounds/creature/jandicebarov/vo_scho_barov_slay_01.ogg"
+      ],
+      "ha": [
+        "./sounds/creature/frostlord/frostlordbirth.ogg"
+      ],
+      "dontleave": [
+        "./sounds/creature/essenceofdesire/blcktmple_essncedesir_slay01.ogg"
+      ],
+      "scrawnygrabbers": [
+        "./sounds/creature/thebutcher/vo_60_ogreraid_butcher_berzerk.ogg"
+      ],
+      "explosions": [
+        "./sounds/creature/mekgineersteamrigger/coil_meksteam_slay01.ogg"
+      ]
+    }
+  }
