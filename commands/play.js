@@ -1,4 +1,5 @@
 const rewardNames = Object.keys(require('./../data/rewardsData.js').rewards)
+const rewards = require('./../data/rewardsData.js').rewards;
 const utility = require('./../utility/utility.js');
 const Discord = require('discord.js');
 
@@ -18,8 +19,9 @@ module.exports = {
       if (rewardNames.includes(args[0])){
         rewardName = args[0]
         browniePoints = utility.GetAlwaysFromCollection(message.client.browniePoints, message.author.id, 0);
-        neededBP = rewardNames[rewardName];
-
+        neededBP = rewards[rewardName];
+        console.log(neededBP)
+        console.log(rewardNames)
         if(browniePoints >= neededBP){
           const fileName = `./sounds/rewards/${rewardName}.ogg`;
           PlayFile(message, fileName);

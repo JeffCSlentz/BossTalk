@@ -14,7 +14,7 @@ module.exports = {
         }
 
         for (const name of rewardNames){
-          let number = rewards[name];
+          let number = rewardNames[name];
           let aString = `${number}: `;
           aString = aString.concat(name);
 

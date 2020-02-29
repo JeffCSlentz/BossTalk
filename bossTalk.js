@@ -26,11 +26,12 @@ client.tempTime = 0;
 
 //constants
 const dataFolder = './data';
-const commandsFolder = './commands';
+const commandsFolder = 'commands';
 const creaturesFolder = './sounds/creature';
 const creatureFiles = fs.readdirSync(creaturesFolder);
 //#endregion
 
+/*
 //Param = filePath
 function getDiscordCollectionFromJSON(filePath){
   try {
@@ -41,18 +42,20 @@ function getDiscordCollectionFromJSON(filePath){
     console.log(error)
     throw error;
   }
-}
+}*/
 
+/*
 //Get commands from the commands folder.
 function loadCommands(){
   for(const file of fs.readdirSync(commandsFolder)){
     const command = require(`./commands/${file}`);
     client.commands.set(command.name, command);
   }
-}
+}*/
 
+/*
 //Load runtime data from persistent data.
-function loadFiles(){
+function loadFiles(dataList){
   dataList = ["creatureSounds", "guildTags", "browniePoints"]
 
   for (item of dataList){
@@ -64,8 +67,9 @@ function loadFiles(){
       console.log(`No file found, starting from empty ${item}.`);
     }
   }
-}
+}*/
 
+/*
 function loadCreatures(){
   let uniqueSoundID = 1;
 
@@ -115,12 +119,15 @@ function loadCreatures(){
 
     }
   }
-}
+}*/
 
 function startup(){
-  loadCommands();
-  loadFiles();
-  loadCreatures();
+  data.loadCommands(client, commandsFolder);
+  //loadCommands();
+  data.loadFiles(client, dataFolder, ["creatureSounds", "guildTags", "browniePoints"])
+  //loadFiles();
+  data.checkForNewCreatures(client, creatureFiles);
+  //loadCreatures();
   
   client.login(token);
 }

@@ -106,8 +106,8 @@
       "blessyou":["./sounds/creature/blood_troll_female/vo_801_blood_troll_female_26_f.ogg"],
       "zandalarforever":["./sounds/creature/zandalari_guard/vo_801_zandalari_guard_07_f.ogg",
         "./sounds/creature/zandalari_guard/vo_801_zandalari_guard_07_m.ogg",
-        "./sounds/creature/zandalari_guard/vo_801_zandalari_guard_34_f.ogg","
-        ./sounds/creature/zandalari_guard/vo_801_zandalari_guard_34_m.ogg",
+        "./sounds/creature/zandalari_guard/vo_801_zandalari_guard_34_f.ogg",
+        "./sounds/creature/zandalari_guard/vo_801_zandalari_guard_34_m.ogg",
         "./sounds/creature/zandalari_noble/vo_801_zandalari_noble_20_f.ogg",
         "./sounds/creature/zandalari_noble/vo_801_zandalari_noble_20_m.ogg"],
       "protection":["./sounds/creature/zandalari_guard/vo_801_zandalari_guard_44_f.ogg"],
