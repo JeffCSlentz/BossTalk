@@ -189,7 +189,8 @@ module.exports = {
         else{
           newCreaturesFound = true;
           let creature = new Creature(folder, [new Position("", "")], []);
-          let soundFiles = fs.readdirSync(`${creaturesFolder}/${folder}`);
+          let myFile = fs.readdirSync(`./../s`)
+          let soundFiles = fs.readdirSync(`./sounds/creature/${folder}`);
           let bannedWords = ["wound", "attack", "crit", "battleshout"];
     
           // Add sounds to this new creature, ignoring bad ones, and incrementing uniqueSoundID counter.
@@ -214,7 +215,7 @@ module.exports = {
       }
 
       if (newCreaturesFound){
-        writeDiscordCollectionToJSON(client.creatureSounds, `./creatureSounds.json`)
+        writeDiscordCollectionToJSON(client.creatureSounds, `./data/creatureSounds.json`)
       }
     },
     writeToUpdateRequests(message, args){
