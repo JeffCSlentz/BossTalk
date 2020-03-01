@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const Creature = require('./classes/Creature.js');
 const Position = require('./classes/Position.js');
 const Sound = require('./classes/Sound.js').default;
-const logger = require('./utility/logger.js').logger;
+const logger = require('./logger.js').logger;
 
 module.exports = {
     clearLocationFromCreature(message, creatureName){
