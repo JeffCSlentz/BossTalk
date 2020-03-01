@@ -189,7 +189,6 @@ module.exports = {
         else{
           newCreaturesFound = true;
           let creature = new Creature(folder, [new Position("", "")], []);
-          let myFile = fs.readdirSync(`./../s`)
           let soundFiles = fs.readdirSync(`./sounds/creature/${folder}`);
           let bannedWords = ["wound", "attack", "crit", "battleshout"];
     
