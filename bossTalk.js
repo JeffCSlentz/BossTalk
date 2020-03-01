@@ -1,7 +1,7 @@
 //#region Variables
 //Discord
 const fs = require('fs');
-const {prefix, token, authorID} = require('./config.json');
+const {token, authorID} = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 
@@ -19,11 +19,14 @@ client.allSounds = new Discord.Collection();      //key = soundID,      value = 
 client.categorySounds = new Discord.Collection();
 client.filePathSounds = new Discord.Collection();
 client.browniePoints = new Discord.Collection();  //key = userID,        value = numBrowniePoints
+client.guildData = new Discord.Collection();
 client.numSounds = 0;
 client.updates = [];
 client.messageReceivedTime = 0;
-client.prefix = prefix;     //REPLACE WITH GUILDSPECIFIC PREFIXES
+client.getPrefix = data.getPrefix;     //REPLACE WITH GUILDSPECIFIC PREFIXES
+client.setPrefix = data.setPrefix;
 client.authorID = authorID  //Is this the best way?
+client.guildData = new Discord.Collection();
 
 //Discord.Permissions.FLAGS.ADMINISTRATOR
 //if(message.member.hasPermission(Discord.Permissions.FLAGS.ADMINISTRATOR))
@@ -50,6 +53,12 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
+  //If bosstalk is mentioned.
+  if(message.mentions.members && message.mentions.members.has(client.user.id)){
+    return message.channel.send(`Hi, I'm boss-talk! Try **${message.client.getPrefix(message)}help**`)
+  }
+
+  prefix = message.client.getPrefix(message);
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
   client.messageReceivedTime = new Date(Date.now()); 

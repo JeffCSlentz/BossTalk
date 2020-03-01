@@ -1,7 +1,6 @@
 const rewardNames = Object.keys(require('./../data/rewardsData.js').rewards)
 const rewards = require('./../data/rewardsData.js').rewards;
 const utility = require('./../utility/utility.js');
-const Discord = require('discord.js');
 
 module.exports = {
     name: 'play',
@@ -12,21 +11,18 @@ module.exports = {
     inVoiceOnly: true,
     execute(message, args) {
       if(!args.length) return;
-
+      if(message.guild.voiceConnection.speaking){
+        return message.channel.send(`I'm already playing a sound! Wait thx`)
+      }
       //If it's a reward
       if (rewardNames.includes(args[0])){
         rewardName = args[0]
         browniePoints = utility.GetAlwaysFromCollection(message.client.browniePoints, message.author.id, 0);
         neededBP = rewards[rewardName];
-        console.log(neededBP)
-        console.log(rewardNames)
         if(browniePoints >= neededBP){
           const fileName = `./sounds/rewards/${rewardName}.ogg`;
           PlayFile(message, fileName);
           return message.channel.send(`SPECIAL SOUND ALERT! BWAAA BWAA BWAAAAA`);
-        }
-        else{
-          return message.channel.send(`You don't have enough brownie points (◕︵◕)`)
         }
       }
 

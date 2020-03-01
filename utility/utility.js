@@ -16,7 +16,7 @@ module.exports = {
       return total;
     },
     getParamsFromMessage(message){
-      let args = message.content.slice(message.client.prefix.length).split(' ');
+      let args = message.content.slice(message.client.getPrefix(message).length).split(' ');
       let command = args.shift().toLowerCase();
       if (!message.client.commands.has(command)){
         args = [command];
