@@ -11,6 +11,9 @@ module.exports = {
             return new Validation(false, "It looks like the server is not available.")
         }
         if(command.inVoiceOnly && !message.client.voiceConnections.has(message.guild.id)){
+            if (command.name == "play"){
+                return new Validation(false, `I tried to play sound **${args[0]}** but I'm not in a voice channel! Use the join command.`);
+            }
             return new Validation(false, "I'm not in a voice channel! Use the join command.");
         }
         return new Validation(true, null);

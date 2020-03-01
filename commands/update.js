@@ -8,11 +8,10 @@ module.exports = {
     guildOnly: false,
     authorOnly: true,
     execute(message, args) {
+      const successMessage = "Thank your for your suggestion!"
       //If the first argument is "file"
       if(args[0] === `file`){
-
         console.log("update.js:13 " + args + "\n");
-
         if( args.length < 4){
           return message.channel.send("Not enough arguments.");
         }
@@ -24,7 +23,8 @@ module.exports = {
           return message.channel.send("fileName matched over 250 sounds. Match fewer.");
         }
         if(matchingSounds.length > 0){
-          return message.channel.send(dataManip.giveLocationToListOfSounds(message, matchingSounds, new Position(args[2].toLowerCase(), args[3].toLowerCase())));
+          dataManip.writeToUpdateRequests(message, args);
+          return message.channel.send(successMessage);
         }
         else{
           return message.channel.send("No sounds with that fileName found.");
@@ -34,18 +34,18 @@ module.exports = {
       //If the first argument is a creature.
       if(message.client.creatureSounds.has(args[0])){
         data = []
-        data.push(dataManip.giveLocationToCreature(message, args[0].toLowerCase(), new Position(args[1].toLowerCase(), args[2].toLowerCase())));
-        data.push(`You have ${message.client.browniePoints.get(message.author.id)} brownie points!`);
-        return message.channel.send(data);
-
+        dataManip.writeToUpdateRequests(message, args);
+        return message.channel.send(successMessage);
       }
       //If the first and second arguments are integers.
       else if(message.client.allSounds.has(parseInt(args[0])) && message.client.allSounds.has(parseInt(args[1]))){
-        return message.channel.send(dataManip.giveLocationToSoundRange(message, parseInt(args[0]), parseInt(args[1]), new Position(args[2].toLowerCase(), args[3].toLowerCase())));
+        dataManip.writeToUpdateRequests(message, args);
+        return message.channel.send(successMessage);
       }
       //If the first argument is an integer.
       else if(message.client.allSounds.has(parseInt(args[0]))){
-        return message.channel.send(dataManip.giveLocationToSound(message, parseInt(args[0]), new Position(args[1].toLowerCase(), args[2].toLowerCase()), true));
+        reply = dataManip.writeToUpdateRequests(message, args);
+        return message.channel.send(successMessage);
       }
       //If the first argument isn't an integer or a recognized creature.
       else{

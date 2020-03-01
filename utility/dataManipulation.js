@@ -142,16 +142,21 @@ module.exports = {
       addCreatureToFilePathSounds(client, creatureName);
     },
     loadFiles(client, dataFolder, dataList){
-      dataList = ["creatureSounds", "guildTags", "browniePoints"]
+      discordCollection = "discordCollection"
+      anArray = "anArray"
+      dataList = [["creatureSounds", discordCollection],
+                  ["guildTags", discordCollection],
+                  ["browniePoints", discordCollection], 
+                  ["updateRequests", anArray]]
 
       for (item of dataList){
         try {
-          client[item] = getDiscordCollectionFromJSON(`${dataFolder}/${item}.json`);
-          console.log(`Found ${item}.json`)
+          client[item[0]] = getFromJSON(`${dataFolder}/${item[0]}.json`,item[1]);
+          console.log(`Found ${item[0]}.json`)
         }
         catch(error) {
           console.log(error)
-          console.log(`No file found, starting from empty ${item}.`);
+          console.log(`No file found, starting from empty ${item[0]}.`);
         }
       }
     },
@@ -211,17 +216,44 @@ module.exports = {
     
         }
       }
+    },
+    writeToUpdateRequests(message, args){
+      args = "update " + args.join(" ")
+      if(message.client.updateRequests){
+        message.client.updateRequests.push(args)
+      }
+      else{
+        message.client.updateRequests = [args];
+      }
+      fs.writeFile('./data/updateRequests.json', JSON.stringify(message.client.updateRequests), (err) => {
+        if (err) throw err;
+        console.log('Wrote updateRequests to ./updateRequests.json!');
+      });
+
+      return "Thank you for your suggestion!"
     }
 };
 
-function getDiscordCollectionFromJSON(filePath){
-  try {
-    return new Discord.Collection(JSON.parse(fs.readFileSync(filePath)));
-  }
-  catch(error) {
-    console.log("getDiscordCollectionFromJSON went wrong")
-    console.log(error)
-    throw error;
+function getFromJSON(filePath, type){
+  switch(type) {
+    case "discordCollection":
+      try {
+        return new Discord.Collection(JSON.parse(fs.readFileSync(filePath)));
+      }
+      catch(error) {
+        console.log("Getting collection from Discord.Collection went wrong")
+        console.log(error)
+        throw error;
+      }
+    case "anArray":
+      try {
+        return new Array(JSON.parse(fs.readFileSync(filePath)));
+      }
+      catch(error) {
+        console.log("Getting collection from array went wrong")
+        console.log(error)
+        throw error;
+      }
   }
 }
 

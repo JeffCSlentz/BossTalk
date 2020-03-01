@@ -54,7 +54,8 @@ module.exports = {
       if (args[0] == "random" || args[0] == "rand" || args[0] == 'r'){
         soundID = Math.floor(Math.random() * message.client.numSounds) + 1;
       } else if (!Number.isInteger(parseInt(args[0]))){
-          return message.channel.send(`I don't recognize **${args[0]}** as a tag or soundID, ${message.author}! (◕﹏◕✿)`);
+        helpText = `I don't recognize **${args[0]}** as a tag, soundID, or command, ${message.author}! (◕﹏◕✿).`;
+        return message.channel.send(helpText);
       }
       else {
         soundID = parseInt(args[0]);
@@ -86,7 +87,7 @@ function stringSound(message, sound){
   let data = [];
   data.push(`Creature: ${sound.creatureName}, ${sound.id}.`);
   if (message.client.creatureSounds.get(sound.creatureName).positions[0].expansion == ""){
-    data.push(`Type !update [creature] [expansion] [location (dungeon or raid name? world?)] to give this creature a home and win some brownie points!`)
+    data.push(`Type !update [creature] [expansion] [location (dungeon or raid name? world?)] to suggest a location for this creature!`)
   }
   return data;
 }
