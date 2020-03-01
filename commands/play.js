@@ -1,7 +1,7 @@
 const rewardNames = Object.keys(require('./../data/rewardsData.js').rewards)
 const rewards = require('./../data/rewardsData.js').rewards;
 const utility = require('./../utility/utility.js');
-const logger = require('./utility/logger.js').logger;
+const logger = require('./../utility/logger.js').logger;
 module.exports = {
     name: 'play',
     description: 'Play a sound!',

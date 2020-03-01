@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const guildDataFilePath = './data/guildData.json'
-const logger = require('./utility/logger.js').logger;
+const logger = require('./logger.js').logger;
 
 class Provider{
     constructor(){
