@@ -2,8 +2,8 @@ const dataManip = require('../utility/dataManipulation.js');
 const Position = require('../utility/classes/Position.js');
 
 module.exports = {
-    name: 'update',
-    description: 'Help me out by suggesting a change to a creature or sound. Change will be entered for review.',
+    name: 'updateData',
+    description: 'Give a creature or sound some information. Don\'t fuck it up, it\'s a pain in the ass to fix.',
     usage: '[creature] [expansion] [location] OR [soundID] [expansion] [location] OR [soundIDstart] [soundIDend] [expansion] [location] OR ["file"] [filename] [expansion] [location]',
     guildOnly: false,
     authorOnly: true,
