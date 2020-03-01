@@ -9,7 +9,7 @@ module.exports = {
         return message.channel.send(`Choose a volume between 0 and 1, ${message.author}!`);
       }
       else{
-        message.client.volume = args[0];
+        message.client.provider.setGuildProperty(message.guild, "volume", args[0])
         return message.channel.send(`Set volume to ${args[0]}.`);
       }
     },

@@ -16,11 +16,10 @@ module.exports = {
       return total;
     },
     getParamsFromMessage(message){
-      let args = message.content.slice(message.client.getPrefix(message).length).split(' ');
+      let args = message.content.slice(message.client.provider.getGuildProperty(message.guild, "prefix").length).split(' ');
       let command = args.shift().toLowerCase();
       if (!message.client.commands.has(command)){
         args = [command];
-        console.log(args);
         command = "play";
       }
       return {args:args, command:message.client.commands.get(command)}

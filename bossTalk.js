@@ -4,16 +4,20 @@ const fs = require('fs');
 const {token, authorID} = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const Provider = require('./utility/Provider.js');
 
 //First-Party
 const data = require('./utility/dataManipulation.js')
 const utility = require('./utility/utility.js')
 const validate = require('./utility/validator.js').validate;
 
+//Third-Party
+const logger = require('./utility/logger.js').logger;
+
 //Persistent Data
+client.provider = new Provider();
 client.guildTags = new Discord.Collection();
 client.commands = new Discord.Collection();
-client.volume = 0.5;
 client.creatureSounds = new Discord.Collection(); //key = creatureName, value = sounds[]
 client.allSounds = new Discord.Collection();      //key = soundID,      value = sound
 client.categorySounds = new Discord.Collection();
@@ -23,13 +27,7 @@ client.guildData = new Discord.Collection();
 client.numSounds = 0;
 client.updates = [];
 client.messageReceivedTime = 0;
-client.getPrefix = data.getPrefix;     //REPLACE WITH GUILDSPECIFIC PREFIXES
-client.setPrefix = data.setPrefix;
-client.authorID = authorID  //Is this the best way?
-client.guildData = new Discord.Collection();
-
-//Discord.Permissions.FLAGS.ADMINISTRATOR
-//if(message.member.hasPermission(Discord.Permissions.FLAGS.ADMINISTRATOR))
+client.authorID = authorID 
 
 //constants
 const dataFolder = './data';
@@ -49,20 +47,19 @@ client.login(token);
 
 //#region Client event handlers
 client.on('ready', () => {
-  console.log('Ready!');
+  logger.info('Ready!')
 });
 
 client.on('message', message => {
   //If bosstalk is mentioned.
   if(message.mentions.members && message.mentions.members.has(client.user.id)){
-    return message.channel.send(`Hi, I'm boss-talk! Try **${message.client.getPrefix(message)}help**`)
+    return message.channel.send(`Hi, I'm boss-talk! Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`)
   }
 
-  prefix = message.client.getPrefix(message);
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!message.content.startsWith(message.client.provider.getGuildProperty(message.guild, "prefix")) || message.author.bot) return;
 
   client.messageReceivedTime = new Date(Date.now()); 
-  console.log(`Command: T=${client.messageReceivedTime.toTimeString()}, by ${message.author.username}: "${message.content}"`);
+  logger.info(`Command: T=${client.messageReceivedTime.toTimeString()}, by ${message.author.username}: "${message.content}"`);
 
   params = utility.getParamsFromMessage(message);
   command = params.command;
@@ -84,27 +81,6 @@ client.on('message', message => {
       console.error(error);
       message.reply('There was an error trying to execute that command!');
   }
-  /*
-  try {
-    if(command.authorOnly == true && message.author.id == authorID){
-      console.log("Author only!")
-      command.execute(message, args)
-    }
-    else if (command.authorOnly == true && message.author.id != authorID){
-      return;
-    }
-    else if(command.guildOnly && message.channel.type == "text"){
-      console.log("Regular!")
-      command.execute(message, args)
-    }
-    else{
-      message.channel.send("I can only do that in a server.")
-    }
-  }
-  catch (error) {
-      console.error(error);
-      message.reply('There was an error trying to execute that command!');
-  }*/
 });
 
 client.on('error', console.error);
@@ -112,7 +88,7 @@ client.on('error', console.error);
 
 //#region Interrupt handler
 process.on('SIGINT', function() {
-  console.log("Caught interrupt signal");
+  logger.info("Caught interrupt signal");
 
   for(const connection of client.voiceConnections.values()){
     connection.disconnect();
