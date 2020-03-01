@@ -15,16 +15,19 @@ module.exports = {
       let channelReply = "";
 
       if (!args.length) {
-        channelReply = 'I\'ve sent you a DM with all my commands!'
-        data.push('Here\'s a list of all my commands:');
-        listOfCommands = commands.map(command => (validator.helpMessageValidate(message, args, command)?command.name:null))
-        console.log(listOfCommands);
-        data.push(listOfCommands.join(', '));
+        channelReply = 'I\'ve sent you a DM with all my commands!';
+        data.push('Here\'s a list of all my commands available to you:');
+        listOfCommands = commands.map(command => (validator.helpMessageValidate(message, args, command)?command.name:null));
+        listOfCommands = listOfCommands.filter(command => command); //Remove nulls
+        data.push(listOfCommands.join('    '));
         data.push(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`);
       }
       else {
         if (!commands.has(args[0])) {
-            return message.reply('that\'s not a valid command!');
+          return message.reply('that\'s not a valid command!');
+        }
+        else if (!validator.helpMessageValidate(message, args, commands.get(args[0]))){
+          return message.reply('That command is not available to you.');
         }
         const command = commands.get(args[0]);
         channelReply = `I sent you a DM about ${args[0]}!`;
