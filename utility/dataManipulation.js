@@ -189,7 +189,7 @@ module.exports = {
         else{
           newCreaturesFound = true;
           let creature = new Creature(folder, [new Position("", "")], []);
-          let soundFiles = readdirSync(`${creaturesFolder}/${folder}`);
+          let soundFiles = fs.readdirSync(`${creaturesFolder}/${folder}`);
           let bannedWords = ["wound", "attack", "crit", "battleshout"];
     
           // Add sounds to this new creature, ignoring bad ones, and incrementing uniqueSoundID counter.
