@@ -1,7 +1,7 @@
 const rewardNames = Object.keys(require('./../data/rewardsData.js').rewards)
 const rewards = require('./../data/rewardsData.js').rewards;
 const utility = require('./../utility/utility.js');
-
+const logger = require('./utility/logger.js').logger;
 module.exports = {
     name: 'play',
     description: 'Play a sound!',
@@ -72,11 +72,11 @@ module.exports = {
 function PlayFile(message, fileName){
   const connection = message.client.voiceConnections.get(message.guild.id);
   const dispatcher = connection.playFile(fileName);
-  dispatcher.setVolume(message.client.volume); // Set the volume to client.volume
+  dispatcher.setVolume(message.client.provider.getGuildProperty(message.guild, "volume"));
   dispatcher.on(`start`, () => {
      connection.player.streamingData.pausedTime = 0;
   });
-  console.log(`Played ${fileName} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
+  logger.info(`Played ${fileName} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
 }
 
 function stringSound(message, sound){

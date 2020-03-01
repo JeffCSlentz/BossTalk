@@ -86,8 +86,6 @@ module.exports.search = function(message, args){
 
   //If we only found one creature, return that creature.
   if(creatureList.length == 1){
-    console.log(`1 Creature found after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
-
     creature = message.client.creatureSounds.get(creatureList[0]);
     return prettyCreature(message, creature.name);
   }
@@ -97,7 +95,6 @@ module.exports.search = function(message, args){
     for(const creatureName of creatureList){
       data.push(creatureName);
     }
-    console.log(`Multiple creatures found after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
   }
   else if(creatureList.length >= 100){
     data = (`Too many creatures found. Try reducing your search.`);
@@ -159,8 +156,6 @@ function prettySound(message, soundID){
   fData.push(`**Location:** ${sound.position.location}`);
   fData.push(`${sound.creatureName} has ${numSounds} sounds between index ${creature.sounds[0].id} and ${creature.sounds[numSounds - 1].id}.`);
 
-
-  console.log(`3 ${fData}`)
   return fData;
 }
 
@@ -180,6 +175,5 @@ function searchFileNames(message, args){
     fData.push(`${sound.id}: ${fileName}\t` + spaces + `${sound.position.expansion} ${sound.position.location}`); //creature/creatureName/filename.ogg
   }
   fData.push(`\`\`\``);
-  console.log(fData);
   return fData;
 }

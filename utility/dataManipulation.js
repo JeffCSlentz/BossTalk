@@ -4,7 +4,8 @@ const Discord = require('discord.js');
 const Creature = require('./classes/Creature.js');
 const Position = require('./classes/Position.js');
 const Sound = require('./classes/Sound.js').default;
-const {prefix} = require('./../config.json');
+const logger = require('./utility/logger.js').logger;
+
 module.exports = {
     clearLocationFromCreature(message, creatureName){
       let creature = message.client.creatureSounds.get(creatureName);
@@ -63,7 +64,6 @@ module.exports = {
       }
 
       var text = `Updated ${creatureName} with expansion = ${position.expansion}, location = ${position.location}`;
-      console.log(text);
       message.client.updates.push(text);
       writeCreatureSounds(message);
       module.exports.addCreatureToData(message.client, creatureName);
@@ -90,7 +90,7 @@ module.exports = {
         }
         thanksText.push(module.exports.giveLocationToSound(message, i, position, false));
       }
-      writeCreatureSounds();
+      writeCreatureSounds(message);
       return thanksText;
     },
     giveLocationToListOfSounds(message, sounds, position){
@@ -102,7 +102,7 @@ module.exports = {
         }
         thanksText.push(module.exports.giveLocationToSound(message, sound.id, position, false));
       }
-      writeCreatureSounds();
+      writeCreatureSounds(message);
       return thanksText;
     },
     giveLocationToSound(message, soundID, position, write){
@@ -126,11 +126,9 @@ module.exports = {
       }
     },
     writeGuildTags(message){
-      console.log(`49: dataManipulation.js`);
-      console.log(`${JSON.stringify([...message.client.guildTags])}`);
       fs.writeFile('./data/guildTags.json', JSON.stringify([...message.client.guildTags]), (err) => {
         if (err) throw err;
-        console.log('Wrote guildTags to ./guildTags.json!');
+        logger.info('Wrote guildTags to ./guildTags.json!');
       });
     },
     AddBrowniePoints(message, amount){
@@ -148,16 +146,16 @@ module.exports = {
                   ["guildTags", discordCollection],
                   ["browniePoints", discordCollection], 
                   ["updateRequests", anArray],
-                  ["guildData", discordCollection]]
+                  /*["guildData", discordCollection]*/]
 
       for (item of dataList){
         try {
           client[item[0]] = getFromJSON(`${dataFolder}/${item[0]}.json`,item[1]);
-          console.log(`Found ${item[0]}.json`)
+          logger.info(`Loaded ${item[0]}.json`)
         }
         catch(error) {
-          console.log(error)
-          console.log(`No file found, starting from empty ${item[0]}.`);
+          logger.error(error)
+          logger.error(`No file found, starting from empty ${item[0]}.`);
         }
       }
     },
@@ -166,11 +164,11 @@ module.exports = {
         const command = require(`../commands/${file}`);
         client.commands.set(command.name, command);
       }
-      console.log("Loaded Commands")
+      logger.info("Loaded Commands")
     },
     checkForNewCreatures(client,creatureFiles){
       let uniqueSoundID = 1;
-    
+      let newCreaturesFound = false;
       //Iterate through all creature folders, building up runtime data OR adding new creatures not yet seen.
       for (const folder of creatureFiles)
       {
@@ -185,25 +183,22 @@ module.exports = {
               uniqueSoundID++;
             }
             module.exports.addCreatureToData(client, folder);
-          } else {
-            console.log(`skipped ${folder}`);
-          }
-    
+          }    
         }
         //Otherwise, create this creature.
         else{
-          throw "what";
+          newCreaturesFound = true;
           let creature = new Creature(folder, [new Position("", "")], []);
           let soundFiles = readdirSync(`${creaturesFolder}/${folder}`);
           let bannedWords = ["wound", "attack", "crit", "battleshout"];
     
           // Add sounds to this new creature, ignoring bad ones, and incrementing uniqueSoundID counter.
-          console.log(`Creating ${folder}`);
+          logger.info(`Creating ${folder}`);
           for(const file of soundFiles){
             if (bannedWords.some(word => file.includes(word))){
             }
             else{
-              console.log(` Adding sound ${file}`);
+              logger.info(` Adding sound ${file}`);
               let sound = new Sound(uniqueSoundID, "", new Position("", ""), `${creaturesFolder}/${folder}/${file}`, folder);
               client.numSounds = uniqueSoundID;
               creature.sounds.push(sound);
@@ -217,6 +212,10 @@ module.exports = {
     
         }
       }
+
+      if (newCreaturesFound){
+        writeDiscordCollectionToJSON(client.creatureSounds, `./creatureSounds.json`)
+      }
     },
     writeToUpdateRequests(message, args){
       args = "update " + args.join(" ")
@@ -228,7 +227,7 @@ module.exports = {
       }
       fs.writeFile('./data/updateRequests.json', JSON.stringify(message.client.updateRequests), (err) => {
         if (err) throw err;
-        console.log('Wrote updateRequests to ./updateRequests.json!');
+        logger.info('Wrote updateRequests to ./updateRequests.json!');
       });
 
       return "Thank you for your suggestion!"
@@ -236,22 +235,8 @@ module.exports = {
     writeDiscordCollectionToJSON(collection, filePath){
       fs.writeFile(filePath, JSON.stringify([...collection]), (err) => {
         if (err) throw err;
-        console.log(`Wrote to ${filePath}!`);
+        logger.info(`Wrote to ${filePath}!`);
       });
-    },
-    getPrefix(message){
-      if(message.channel.type == "text" && message.client.guildData.has(message.guild.id)){
-        return message.client.guildData.get(message.guild.id).prefix || prefix;
-      }
-      return prefix;
-    },
-    setPrefix(message, prefix){
-      if(message.channel.type == "text" && message.client.guildData.has(message.guild.id)){
-        message.client.guildData.get(message.guild.id).prefix = prefix;
-      }
-      else if(message.channel.type == "text"){
-        message.client.guildData.set(message.guild.id, {prefix:prefix});
-      }
     }
 };
 
@@ -262,8 +247,8 @@ function getFromJSON(filePath, type){
         return new Discord.Collection(JSON.parse(fs.readFileSync(filePath)));
       }
       catch(error) {
-        console.log("Getting collection from Discord.Collection went wrong")
-        console.log(error)
+        logger.error("Getting collection from Discord.Collection went wrong")
+        logger.error(error)
         throw error;
       }
     case "anArray":
@@ -271,8 +256,8 @@ function getFromJSON(filePath, type){
         return new Array(JSON.parse(fs.readFileSync(filePath)));
       }
       catch(error) {
-        console.log("Getting collection from array went wrong")
-        console.log(error)
+        logger.error("Getting collection from array went wrong")
+        logger.error(error)
         throw error;
       }
   }
@@ -312,8 +297,8 @@ function addCreatureToCategorySounds(client, creatureName){
       creatureSet.add(creatureName);
     }
     catch(error) {
-      console.log("Likely that creatureSet is expected to be a set.");
-      console.error(error);
+      logger.error("Likely that creatureSet is expected to be a set.");
+      logger.error(error);
     }
   }
 }
@@ -335,13 +320,13 @@ function localAddBrowniePoints(message, amount){
 function writeBrowniePoints(message){
   fs.writeFile('./data/browniePoints.json', JSON.stringify([...message.client.browniePoints]), (err) => {
     if (err) throw err;
-    console.log('Wrote browniePoints to ./browniePoints.json!');
+    logger.info('Wrote browniePoints to ./browniePoints.json!');
   });
 }
 
 function writeCreatureSounds(message){
   fs.writeFile('./data/creatureSounds.json', JSON.stringify([...message.client.creatureSounds]), (err) => {
     if (err) throw err;
-    console.log('Wrote creatureSounds to ./creatureSounds.json!');
+    logger.info('Wrote creatureSounds to ./creatureSounds.json!');
   });
 }

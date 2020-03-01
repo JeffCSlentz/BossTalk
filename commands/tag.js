@@ -27,15 +27,10 @@ module.exports = {
 
       //Gets list of sounds that has this tag.
       let sounds = tags[tag] || [];
-      console.log(message.client.allSounds.get(soundID));
       sounds.push(message.client.allSounds.get(soundID).filePath);
 
       //Since sounds could be an empty list, not assigned to tags, reassign it.
       tags[tag] = sounds;
-      console.log("\n\ntag.js 45:")
-      console.log(tags);
-
-      console.log(`tag.js 53: Added ${soundID} to ${tag}. This tag has sounds ${tags[tag]}`);
       message.client.guildTags.set(message.guild.id, tags);
 
       dataManip.AddBrowniePoints(message, 5);

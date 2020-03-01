@@ -11,7 +11,6 @@ module.exports = {
       const successMessage = "Thank your for your suggestion!"
       //If the first argument is "file"
       if(args[0] === `file`){
-        console.log("update.js:13 " + args + "\n");
         if( args.length < 4){
           return message.channel.send("Not enough arguments.");
         }

@@ -33,7 +33,7 @@ module.exports = {
         data.push(`**Name:** ${command.name}`);
         if (command.description) data.push(`**Description:** ${command.description}`);
         if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
-        if (command.usage) data.push(`**Usage:** ${message.client.getPrefix(message)}${command.name} ${command.usage}`);
+        if (command.usage) data.push(`**Usage:** ${message.client.provider.getGuildProperty(message.guild, "prefix")}${command.name} ${command.usage}`);
         if (command.cooldown) data.push(`**Cooldown:** ${command.cooldown} second(s)`);
       }
 
