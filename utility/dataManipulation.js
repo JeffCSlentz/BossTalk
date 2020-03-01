@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 const Creature = require('./classes/Creature.js');
 const Position = require('./classes/Position.js');
 const Sound = require('./classes/Sound.js').default;
-
+const {prefix} = require('./../config.json');
 module.exports = {
     clearLocationFromCreature(message, creatureName){
       let creature = message.client.creatureSounds.get(creatureName);
@@ -147,7 +147,8 @@ module.exports = {
       dataList = [["creatureSounds", discordCollection],
                   ["guildTags", discordCollection],
                   ["browniePoints", discordCollection], 
-                  ["updateRequests", anArray]]
+                  ["updateRequests", anArray],
+                  ["guildData", discordCollection]]
 
       for (item of dataList){
         try {
@@ -231,6 +232,26 @@ module.exports = {
       });
 
       return "Thank you for your suggestion!"
+    },
+    writeDiscordCollectionToJSON(collection, filePath){
+      fs.writeFile(filePath, JSON.stringify([...collection]), (err) => {
+        if (err) throw err;
+        console.log(`Wrote to ${filePath}!`);
+      });
+    },
+    getPrefix(message){
+      if(message.channel.type == "text" && message.client.guildData.has(message.guild.id)){
+        return message.client.guildData.get(message.guild.id).prefix || prefix;
+      }
+      return prefix;
+    },
+    setPrefix(message, prefix){
+      if(message.channel.type == "text" && message.client.guildData.has(message.guild.id)){
+        message.client.guildData.get(message.guild.id).prefix = prefix;
+      }
+      else if(message.channel.type == "text"){
+        message.client.guildData.set(message.guild.id, {prefix:prefix});
+      }
     }
 };
 

@@ -3,7 +3,7 @@ module.exports = {
     description: 'Get information about the BROWNIE POINT LEADERBOARD ( ͡° ͜ʖ ͡°)',
     usage: 'none/[user]',
     guildOnly: false,
-    authorOnly: false,
+    authorOnly: true,
     execute(message, args) {
       let data = [];
 

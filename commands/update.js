@@ -6,7 +6,7 @@ module.exports = {
     description: 'Help me out by suggesting a change to a creature or sound. Change will be entered for review.',
     usage: '[creature] [expansion] [location] OR [soundID] [expansion] [location] OR [soundIDstart] [soundIDend] [expansion] [location] OR ["file"] [filename] [expansion] [location]',
     guildOnly: false,
-    authorOnly: true,
+    authorOnly: false,
     execute(message, args) {
       const successMessage = "Thank your for your suggestion!"
       //If the first argument is "file"
