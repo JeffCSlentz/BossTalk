@@ -10,6 +10,9 @@ module.exports = {
         if(command.guildOnly && !message.guild.available){
             return new Validation(false, "It looks like the server is not available.")
         }
+        if(command.adminOnly && !message.member.permissions.has("ADMINISTRATOR")){
+            return new Validation(false, "this command requires an administrator.")
+        }
         if(command.inVoiceOnly && !message.client.voiceConnections.has(message.guild.id)){
             if (command.name == "play"){
                 return new Validation(false, `I tried to play sound **${args[0]}** but I'm not in a voice channel! Use the join command.`);
@@ -22,7 +25,6 @@ module.exports = {
         if(command.authorOnly && message.author.id != message.client.authorID){
             return false;
         }
-        //add permission based checks as well.
         return true;
     }
 }
