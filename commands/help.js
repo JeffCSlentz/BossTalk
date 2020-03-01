@@ -19,7 +19,7 @@ module.exports = {
         listOfCommands = commands.map(command => (validator.helpMessageValidate(message, args, command)?command.name:null));
         listOfCommands = listOfCommands.filter(command => command); //Remove nulls
         data.push(listOfCommands.join('    '));
-        data.push(`\nYou can send \`${message.client.getPrefix(message)}help [command name]\` to get info on a specific command!`);
+        data.push(`\nYou can send \`!!help [command name]\` to get info on a specific command!`);
       }
       else {
         if (!commands.has(args[0])) {
