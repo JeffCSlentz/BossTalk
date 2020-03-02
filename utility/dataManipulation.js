@@ -3,7 +3,7 @@ const utility = require('./utility.js');
 const Discord = require('discord.js');
 const Creature = require('./classes/Creature.js');
 const Position = require('./classes/Position.js');
-const Sound = require('./classes/Sound.js').default;
+const Sound = require('./classes/Sound.js');
 const logger = require('./logger.js').logger;
 
 module.exports = {
@@ -199,7 +199,7 @@ module.exports = {
             }
             else{
               logger.info(` Adding sound ${file}`);
-              let sound = new Sound(uniqueSoundID, "", new Position("", ""), `${creaturesFolder}/${folder}/${file}`, folder);
+              let sound = new Sound(uniqueSoundID, "", new Position("", ""), `./sounds/creature/${folder}/${file}`, folder);
               client.numSounds = uniqueSoundID;
               creature.sounds.push(sound);
               uniqueSoundID++;
@@ -208,13 +208,13 @@ module.exports = {
     
           //Add this creature to the creatureSounds collection.
           client.creatureSounds.set(creature.name, creature);
-          addCreatureToData(client, folder);
+          module.exports.addCreatureToData(client, folder);
     
         }
       }
 
       if (newCreaturesFound){
-        writeDiscordCollectionToJSON(client.creatureSounds, `./data/creatureSounds.json`)
+        module.exports.writeDiscordCollectionToJSON(client.creatureSounds, `./data/creatureSounds.json`)
       }
     },
     writeToUpdateRequests(message, args){
