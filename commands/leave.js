@@ -5,9 +5,8 @@ module.exports = {
     authorOnly: false,
     inVoiceOnly: true,
     execute(message, args) {
-      connection = message.client.voiceConnections.get(message.guild.id);
-      channelName = connection.channel.name;
-      connection.disconnect();
+      channelName = message.guild.voice.connection.channel.name;
+      message.guild.voice.connection.disconnect();
       return message.channel.send(`Left ${channelName}.`);
     },
 };
