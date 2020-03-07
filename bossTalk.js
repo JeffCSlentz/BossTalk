@@ -1,6 +1,3 @@
-
-
-
 //#region Variables
 //Discord
 const fs = require('fs');
