@@ -13,7 +13,7 @@ module.exports = {
         if(command.adminOnly && !message.member.permissions.has("ADMINISTRATOR")){
             return new Validation(false, "this command requires an administrator.")
         }
-        if(command.inVoiceOnly && !message.client.voiceConnections.has(message.guild.id)){
+        if(command.inVoiceOnly && message.guild && !message.guild.voice){
             if (command.name == "play"){
                 return new Validation(false, `I tried to play sound **${args[0]}** but I'm not in a voice channel! Use the join command.`);
             }
