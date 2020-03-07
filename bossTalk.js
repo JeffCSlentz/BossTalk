@@ -90,7 +90,7 @@ client.on('error', console.error);
 process.on('SIGINT', function() {
   logger.info("Caught interrupt signal");
 
-  for(const connection of client.voiceConnections.values()){
+  for(const connection of client.voice.connections.values()){
     connection.disconnect();
   }
   process.exit();
