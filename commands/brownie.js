@@ -26,8 +26,8 @@ module.exports = {
         let br = Array.from(message.client.browniePoints);
         br.sort((a,b) => (parseInt(b[1]) - parseInt(a[1])));
         for(const user of br){
-          if (message.guild.members.has(user[0])){
-            data.push(`${message.guild.members.get(user[0]).user.username}: ${message.client.browniePoints.get(user[0])}`);
+          if (message.guild.members.cache.has(user[0])){
+            data.push(`${message.guild.members.cache.get(user[0]).user.username}: ${message.client.browniePoints.get(user[0])}`);
           }
         }
         return message.channel.send(data);

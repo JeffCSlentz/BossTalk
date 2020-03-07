@@ -11,7 +11,7 @@ module.exports = {
     inVoiceOnly: true,
     execute(message, args) {
       if(!args.length) return;
-      if(message.guild.voiceConnection.speaking){
+      if(message.guild.voice.speaking == true){
         return message.channel.send(`I'm already playing a sound! Wait thx`)
       }
       //If it's a reward
@@ -70,11 +70,11 @@ module.exports = {
 };
 
 function PlayFile(message, fileName){
-  const connection = message.client.voiceConnections.get(message.guild.id);
-  const dispatcher = connection.playFile(fileName);
+  const connection = message.guild.voice.connection
+  const dispatcher = connection.play(fileName);
   dispatcher.setVolume(message.client.provider.getGuildProperty(message.guild, "volume"));
   dispatcher.on(`start`, () => {
-     connection.player.streamingData.pausedTime = 0;
+     //connection.player.streamingData.pausedTime = 0;
   });
   logger.info(`Played ${fileName} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
 }
