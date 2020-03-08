@@ -1,3 +1,5 @@
+const dataManip = require('./../utility/dataManipulation.js');
+
 module.exports = {
     name: 'untag',
     description: 'Untag a sound or tag',
@@ -26,7 +28,7 @@ module.exports = {
 
         delete tags[args[0]];
         message.client.guildTags.set(message.guild.id, tags);
-
+        dataManip.writeGuildTags(message);
         return message.channel.send(data);
       }
 
@@ -53,6 +55,7 @@ module.exports = {
             }
 
             message.client.guildTags.set(message.guild.id, tags);
+            dataManip.writeGuildTags(message);
             return message.channel.send(`Removed ${args[0]} from ${tag}.`);
           }
         }
