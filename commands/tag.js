@@ -32,7 +32,7 @@ module.exports = {
       //Since sounds could be an empty list, not assigned to tags, reassign it.
       tags[tag] = sounds;
       message.client.guildTags.set(message.guild.id, tags);
-
+      dataManip.writeGuildTags(message);
       dataManip.AddBrowniePoints(message, 5);
       return message.channel.send(`Thanks for adding sound ${soundID} to ${tag}! You get 5 brownie points. ◕ ◡ ◕`);
     },
