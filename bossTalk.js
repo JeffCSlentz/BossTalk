@@ -60,8 +60,9 @@ client.on('message', message => {
   if (!message.content.startsWith(message.client.provider.getGuildProperty(message.guild, "prefix")) || message.author.bot) return;
 
   //Housekeeping
-  client.messageReceivedTime = new Date(Date.now()); 
-  logger.info(`${message.guild.name}-${message.author.username}: "${message.content}"`);
+  client.messageReceivedTime = new Date(Date.now());
+  let guildName = "DM" ? !message.guild : message.guild.name;
+  logger.info(`${guildName}-${message.author.username}: "${message.content}"`);
 
   params = utility.getParamsFromMessage(message);
   command = params.command;
