@@ -242,7 +242,7 @@ module.exports = {
           module.exports.addCreatureToData(client, folder);
         }
       }
-      client.numSounds = uniqueSoundID;
+      client.numSounds = uniqueSoundID - 1;
       if (newDataFound){
         console.log("NEW DATA FOUND: Writing creatureSounds to JSON")
         module.exports.writeDiscordCollectionToJSON(client.creatureSounds, `./data/creatureSounds.json`)

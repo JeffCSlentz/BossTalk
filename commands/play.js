@@ -72,6 +72,7 @@ module.exports = {
 function PlayFile(message, fileName){
   const connection = message.guild.voice.connection
   const dispatcher = connection.play(fileName);
+  message.client.provider.stats.playedSound(message, fileName);
   dispatcher.setVolume(message.client.provider.getGuildProperty(message.guild, "volume"));
   dispatcher.on(`start`, () => {
      //connection.player.streamingData.pausedTime = 0;
