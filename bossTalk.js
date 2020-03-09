@@ -56,10 +56,12 @@ client.on('message', message => {
     return message.channel.send(`Hi, I'm boss-talk! Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`)
   }
 
+  //If message doesn't start with prefix or it's a bot.
   if (!message.content.startsWith(message.client.provider.getGuildProperty(message.guild, "prefix")) || message.author.bot) return;
 
+  //Housekeeping
   client.messageReceivedTime = new Date(Date.now()); 
-  logger.info(`Command: T=${client.messageReceivedTime.toTimeString()}, by ${message.author.username}: "${message.content}"`);
+  logger.info(`${message.guild.name}-${message.author.username}: "${message.content}"`);
 
   params = utility.getParamsFromMessage(message);
   command = params.command;
@@ -68,6 +70,7 @@ client.on('message', message => {
   try {
     validation = validate(message, args, command);
     if(validation.isValid){
+      message.client.provider.stats.addCommand(message.author, command)
       command.execute(message, args)
     }
     else if(validation.suggestion){
@@ -81,6 +84,14 @@ client.on('message', message => {
       console.error(error);
       message.reply('There was an error trying to execute that command!');
   }
+});
+
+client.on('guildCreate', guild => {
+  client.provider.stats.addGuild(guild);
+});
+
+client.on('guildDelete', guild => {
+  client.provider.stats.removeGuild(guild);
 });
 
 client.on('error', console.error);
