@@ -5,7 +5,7 @@ const logger = require('./../utility/logger.js').logger;
 module.exports = {
     name: 'play',
     description: 'Play a sound!',
-    usage: '[expansion] [dungeon] [boss] [number]',
+    usage: '[expansion] OR [dungeon] OR [creature] OR [soundID]',
     guildOnly: true,
     authorOnly: false,
     inVoiceOnly: true,
