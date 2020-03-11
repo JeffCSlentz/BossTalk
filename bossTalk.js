@@ -61,7 +61,8 @@ client.on('message', message => {
 
   //Housekeeping
   client.messageReceivedTime = new Date(Date.now());
-  let guildName = "DM" ? !message.guild : message.guild.name;
+  let guildName = !message.guild? "DM" : message.guild.name;
+  //let guildName = "DM" ? !message.guild : message.guild.name;
   logger.info(`${guildName}-${message.author.username}: "${message.content}"`);
 
   params = utility.getParamsFromMessage(message);

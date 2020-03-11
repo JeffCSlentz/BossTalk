@@ -3,3 +3,7 @@ config.json
 backups/
 logs/
 desktop.ini
+data\browniePoints.json
+data\guildData.json
+data\guildTags.json
+data\statsData.json
