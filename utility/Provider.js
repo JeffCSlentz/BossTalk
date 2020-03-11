@@ -156,6 +156,6 @@ function readJSONObject(filePath){
 function writeJSONObject(obj, filePath){
     fs.writeFile(filePath, JSON.stringify(obj), (err) => {
         if (err) throw err;
-      });
-      logger.info(`Wrote to ${filePath}!`);
+    });
+    //logger.info(`Wrote to ${filePath}!`);
 }
