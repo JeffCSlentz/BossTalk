@@ -53,8 +53,8 @@ client.on('ready', () => {
 client.on('message', message => {
   //If bosstalk is mentioned.
   if(message.mentions.members && message.mentions.members.has(client.user.id)){
-    return message.channel.send([`Hi, I'm boss-talk! My prefix is **${message.client.provider.getGuildProperty(message.guild, "prefix")}**`],
-                                [`Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`])
+    return message.channel.send([`Hi, I'm boss-talk! My prefix is **${message.client.provider.getGuildProperty(message.guild, "prefix")}**`,
+                                `Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`])
   }
 
   //If message doesn't start with prefix or it's a bot.
