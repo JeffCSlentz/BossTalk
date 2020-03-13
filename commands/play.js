@@ -22,7 +22,7 @@ module.exports = {
         neededBP = rewards[rewardName];
         if(browniePoints >= neededBP){
           const fileName = `./sounds/rewards/${rewardName}.ogg`;
-          playSound(message, fileName);
+          playSound(message, {fileName:fileName});
           return message.channel.send(`SPECIAL SOUND ALERT! BWAAA BWAA BWAAAAA`);
         }
       }
