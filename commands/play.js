@@ -11,7 +11,7 @@ module.exports = {
     inVoiceOnly: true,
     execute(message, args) {
       if(!args.length) return;
-      if(message.guild.voice.speaking == true){
+      if(message.guild.voice.connection.speaking == true){
         return message.channel.send(`I'm already playing a sound! Wait thx`)
       }
       //If it's a reward
