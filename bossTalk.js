@@ -53,7 +53,8 @@ client.on('ready', () => {
 client.on('message', message => {
   //If bosstalk is mentioned.
   if(message.mentions.members && message.mentions.members.has(client.user.id)){
-    return message.channel.send(`Hi, I'm boss-talk! Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`)
+    return message.channel.send([`Hi, I'm boss-talk! My prefix is **${message.client.provider.getGuildProperty(message.guild, "prefix")}**`],
+                                [`Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`])
   }
 
   //If message doesn't start with prefix or it's a bot.
@@ -62,7 +63,6 @@ client.on('message', message => {
   //Housekeeping
   client.messageReceivedTime = new Date(Date.now());
   let guildName = !message.guild? "DM" : message.guild.name;
-  //let guildName = "DM" ? !message.guild : message.guild.name;
   logger.info(`${guildName}-${message.author.username}: "${message.content}"`);
 
   params = utility.getParamsFromMessage(message);
