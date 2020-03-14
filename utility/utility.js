@@ -22,6 +22,9 @@ module.exports = {
         args = [command];
         command = "play";
       }
+      if(args.length == 1 && args[0] == ""){
+        args = [];
+      }
       return {args:args, command:message.client.commands.get(command)}
     }
 };

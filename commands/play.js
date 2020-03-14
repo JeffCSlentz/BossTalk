@@ -22,7 +22,7 @@ module.exports = {
         neededBP = rewards[rewardName];
         if(browniePoints >= neededBP){
           const fileName = `./sounds/rewards/${rewardName}.ogg`;
-          playSound(message, {fileName:fileName});
+          playFile(message, fileName); //This is awk
           return message.channel.send(`SPECIAL SOUND ALERT! BWAAA BWAA BWAAAAA`);
         }
       }
@@ -38,22 +38,26 @@ module.exports = {
       //If it's random
       if (args[0] == "random" || args[0] == "rand" || args[0] == 'r'){
         soundID = Math.floor(Math.random() * message.client.numSounds) + 1;
-        return playSound(message, message.client.allSounds.get(soundID));
+        sound = message.client.allSounds.get(soundID)
+        playFile(message, sound.filePath);
+        return message.channel.send(stringSound(message, sound));
       }
 
       //If it's a tag.
       const tags = message.client.guildTags.get(message.guild.id) || {};  //Get the tags object from the guild ID.
       soundFilePaths = tags[args[0]] || []; //If the tag has soundFilePaths, get them. Otherwise return empty list.
-
       if(soundFilePaths.length){
         const soundFilePath = soundFilePaths[Math.floor(Math.random()*soundFilePaths.length)];
         let sound = message.client.filePathSounds.get(soundFilePath);
-        return playSound(message, sound);
+        playFile(message, sound.filePath);
+        return message.channel.send(stringSound(message, sound));
       }
 
       //If it's a creature.
       if(message.client.creatureSounds.has(args[0])){
-        return playRandomSoundFromCreature(message, args[0]);
+        sound =  getRandomSoundFromCreature(message, args[0]);
+        playFile(message, sound.filePath);
+        return message.channel.send(stringSound(message, sound));
       }
 
       //If it's a location.
@@ -63,7 +67,9 @@ module.exports = {
         if(locations.has(args[0])){
           let creatureNames = Array.from(locations.get(args[0]));
           creatureName = creatureNames[Math.floor(Math.random()*creatureNames.length)]
-          return playRandomSoundFromCreature(message, creatureName);
+          sound = getRandomSoundFromCreature(message, creatureName);
+          playFile(message, sound.filePath);
+          return message.channel.send(stringSound(message, sound));
         }
       }
 
@@ -75,7 +81,9 @@ module.exports = {
           creatureNames.push(...Array.from(creatureSet.values()));
         }
         creatureName = creatureNames[Math.floor(Math.random()*creatureNames.length)]
-        return playRandomSoundFromCreature(message, creatureName);
+        sound = getRandomSoundFromCreature(message, creatureName);
+        playFile(message, sound.filePath);
+        return message.channel.send(stringSound(message, sound));
       }
 
       //If it's not an integer.
@@ -87,7 +95,8 @@ module.exports = {
       //It's an integer.
       soundID = parseInt(args[0]);
       if (message.client.allSounds.has(soundID)){
-        return playSound(message, message.client.allSounds.get(soundID));
+        playFile(message, message.client.allSounds.get(soundID).filePath);
+        return message.channel.send(stringSound(message, message.client.allSounds.get(soundID)));
       }
       else{
         return message.channel.send(`I don't have that many sounds! (´･ω･\`)`);
@@ -95,33 +104,41 @@ module.exports = {
     },
 };
 
-function playSound(message, sound){
+function playFile(message, filePath){
   const connection = message.guild.voice.connection
-  const dispatcher = connection.play(sound.filePath);
-  message.client.provider.stats.playedSound(message, sound.filePath);
+  const dispatcher = connection.play(filePath);
+  message.client.provider.stats.playedSound(message, filePath);
   dispatcher.setVolume(message.client.provider.getGuildProperty(message.guild, "volume"));
   dispatcher.on(`start`, () => {
      //connection.player.streamingData.pausedTime = 0;
   });
-  logger.info(`Played ${sound.filePath} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
-  return message.channel.send(stringSound(message, sound));
+  logger.info(`Played ${filePath} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
+  //message.channel.send(stringSound(message, sound));
 }
 
-function playRandomSoundFromCreature(message,creatureName){
+function getRandomSoundFromCreature(message,creatureName){
   if(!message.client.creatureSounds.has(creatureName)){
     logger.error("playRandomSoundFromCreature was passed an invalid creature name");
   }
   sounds = message.client.creatureSounds.get(creatureName).sounds;
-  console.log(sounds);
   sound = sounds[Math.floor(Math.random()*sounds.length)];
-  return playSound(message, sound);
+  return sound;
 }
 
 function stringSound(message, sound){
-  let data = [];
-  data.push(`Creature: ${sound.creatureName}, ${sound.id}.`);
-  if (message.client.creatureSounds.get(sound.creatureName).positions[0].expansion == ""){
-    data.push(`Type !update [creature] [expansion] [location (dungeon or raid name? world?)] to suggest a location for this creature!`)
+  let data = '';
+  data += (`**${sound.creatureName}**: \`${sound.id}\`` + " ".repeat(10))
+  if (sound.position.expansion== ""){
+    data += `**Expansion**: \`unknown\``;
+  }
+  else{
+    data += `**Expansion**: \`${sound.position.expansion}\``;
+    if (sound.position.location == ""){
+      data += `   **Location**: \`unknown\``
+    }
+    else{
+      data += `   **Location**: \`${sound.position.location}\``
+    }
   }
   return data;
 }
