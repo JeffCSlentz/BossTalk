@@ -111,12 +111,12 @@ module.exports.search = function(message, args){
 };
 
 function prettyString(title, array){
-  let aString = `${title.charAt(0).toUpperCase() + title.slice(1)}: `;
+  let aString = `${title.charAt(0).toUpperCase() + title.slice(1)}`;
   for(const item of array){
-    aString = aString.concat(`${item}, `);
+    aString = aString.concat(`\`${item}\`, `);
   }
 
-  return aString.substring(0, aString.length-2);;
+  return aString.substring(0, aString.length-2);
 }
 
 function prettyCreature(message, creatureName){
@@ -125,8 +125,26 @@ function prettyCreature(message, creatureName){
   creature = message.client.creatureSounds.get(creatureName);
   numSounds = creature.sounds.length;
   fData.push(`**Creature:** ${creatureName}`);
-  fData.push(prettyString("**Expansions:** ", creature.positions.map(position => position.expansion)));
-  fData.push(prettyString("**Locations:** ", creature.positions.map(position => position.location)));
+
+  if(creature.positions.length == 1 && creature.positions[0].expansion == ""){
+    fData.push("**Expansion:** \`unknown\`");
+  }
+  else if (creature.positions.length == 1){
+    fData.push(prettyString("**Expansion:** ", creature.positions.map(position => position.expansion)));
+  }
+  else{
+    fData.push(prettyString("**Expansions:** ", creature.positions.map(position => position.expansion)));
+  }
+
+  if(creature.positions.length == 1 && creature.positions[0].location == ""){
+    fData.push("**Location:** \`unknown\`");
+  }
+  else if(creature.positions.length == 1){
+    fData.push(prettyString("**Location:** ", creature.positions.map(position => position.location)));
+  }
+  else{
+    fData.push(prettyString("**Locations:** ", creature.positions.map(position => position.location)));
+  }
   fData.push(`${creatureName} has ${numSounds} sounds between index ${creature.sounds[0].id} and ${creature.sounds[numSounds - 1].id}.`);
   fData.push(`\`\`\``)
   for(sound of creature.sounds){
