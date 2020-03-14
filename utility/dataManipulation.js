@@ -317,6 +317,9 @@ function givePosition(creature, position){
   return;
 }
 
+//client.categorySounds.get(EXPANSION_NAME)
+//returns a discord collection (key=LOCATION_NAME, val=set(CREATURE_NAMES))
+
 //Adds a creature object to categorySounds collection.
 function addCreatureToCategorySounds(client, creatureName){
   creature = client.creatureSounds.get(creatureName);
