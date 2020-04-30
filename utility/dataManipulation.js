@@ -210,14 +210,19 @@ module.exports = {
           
           //Remove sounds that have too small size in bytes or includes a banned word in the file name.
           creature.sounds = currentSounds.filter(sound => (fs.statSync(sound.filePath)["size"] > 4200 && !bannedWords.some(word => sound.filePath.includes(word))))
+          
 
           //Re-index sounds.
-          for(sound of creature.sounds){
-            sound.id = uniqueSoundID;
-            uniqueSoundID++;
+          if(creature.sounds.length != 0){
+            for(sound of creature.sounds){
+              sound.id = uniqueSoundID;
+              uniqueSoundID++;
+            }
+            module.exports.addCreatureToData(client, folder);
           }
-
-          module.exports.addCreatureToData(client, folder);
+          else{
+            client.creatureSounds.delete(folder)
+          }
         }
         //Otherwise, create this creature.
         else{
@@ -238,8 +243,10 @@ module.exports = {
             }
           }
           //Add this creature to the creatureSounds collection.
-          client.creatureSounds.set(creature.name, creature);
-          module.exports.addCreatureToData(client, folder);
+          if(creature.sounds.length != 0){
+            client.creatureSounds.set(creature.name, creature);
+            module.exports.addCreatureToData(client, folder);
+          }
         }
       }
       client.numSounds = uniqueSoundID - 1;

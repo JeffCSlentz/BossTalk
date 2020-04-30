@@ -1,5 +1,6 @@
 module.exports = {
-  rewards: {"nazeebo1": 100,
+  rewards: {"nazhorn": 0,
+            "nazeebo1": 100,
             "cake":200,
             "need":200,
             "backup":200,
