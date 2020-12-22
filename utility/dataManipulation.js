@@ -208,8 +208,7 @@ module.exports = {
             currentSounds.splice(soundInsertObject.index, 0, soundInsertObject.sound);
           }
           
-          //Remove sounds that have too small size in bytes or includes a banned word in the file name.
-          creature.sounds = currentSounds.filter(sound => (fs.statSync(sound.filePath)["size"] > 4200 && !bannedWords.some(word => sound.filePath.includes(word))))
+          creature.sounds = currentSounds.filter(sound => (fs.statSync(sound.filePath)["size"] > 4200 && !bannedWords.some(word => sound.filePath.includes(word))));
           
 
           //Re-index sounds.
