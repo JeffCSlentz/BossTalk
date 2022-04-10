@@ -3,7 +3,7 @@
 const fs = require('fs');
 const {token, authorID} = require('./config.json');
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.DIRECT_MESSAGES]});
 const Provider = require('./utility/Provider.js');
 
 //First-Party
@@ -46,15 +46,21 @@ initialize();
 client.login(token);
 
 //#region Client event handlers
-client.on('ready', () => {
+//client.on('ready', () => {
+//  logger.info('Ready!')
+//});
+
+client.once('ready', () => {
   logger.info('Ready!')
 });
 
-client.on('message', message => {
+client.on('messageCreate', (message) => {
+  //console.log("something!")
+  //console.log(message)
   //If bosstalk is mentioned.
   if(message.mentions.members && message.mentions.members.has(client.user.id)){
-    return message.channel.send([`Hi, I'm boss-talk! My prefix is **${message.client.provider.getGuildProperty(message.guild, "prefix")}**`,
-                                `Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`])
+    return message.channel.send(`Hi, I'm boss-talk! My prefix is **${message.client.provider.getGuildProperty(message.guild, "prefix")}**\n`,
+                                `Try **${message.client.provider.getGuildProperty(message.guild, "prefix")}help**`)
   }
 
   //If message doesn't start with prefix or it's a bot.
@@ -70,7 +76,7 @@ client.on('message', message => {
   args = params.args;
 
   try {
-    validation = validate(message, args, command);
+    let validation = validate(message, args, command);
     if(validation.isValid){
       message.client.provider.stats.addCommand(message.author, command)
       command.execute(message, args)

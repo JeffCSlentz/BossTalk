@@ -235,7 +235,7 @@ module.exports = {
             if (bannedWords.some(word => file.includes(word))){
             }
             else{
-              logger.info(` Adding sound ${file}`);
+              //logger.info(` Adding sound ${file}`);
               let sound = new Sound(uniqueSoundID, "", new Position("", ""), `./sounds/creature/${folder}/${file}`, folder);
               creature.sounds.push(sound);
               uniqueSoundID++;

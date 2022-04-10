@@ -5,8 +5,20 @@
   "main": "bossTalk.js",
   "author": "Jeffrey Slentz",
   "dependencies": {
-    "@discordjs/opus": "^0.1.0",
-    "discord.js": "^12.0.1",
-    "winston": "^3.2.1"
+    "@discordjs/opus": "^0.7.0",
+    "@discordjs/voice": "^0.8.0",
+    "aws-sdk": "^2.1111.0",
+    "discord.js": "^13.6.0",
+    "winston": "^3.7.2"
+  },
+  "scripts": {
+    "dev-win": "set NODE_ENV=dev&& node index.js",
+    "prod-win": "set NODE_ENV=prod&& node index.js",
+    "dev-linux": "export NODE_ENV=dev && node index.js",
+    "prod-linx": "export NODE_ENV=prod && node index.js",
+    "reindex-dev-win": "set NODE_ENV=dev&& node utility/reindex.js",
+    "reindex-prod-win": "set NODE_ENV=prod&& node utility/reindex.js",
+    "reindex-dev-linux": "export NODE_ENV=dev && node utility/reindex.js",
+    "reindex-prod-linx": "export NODE_ENV=prod && node utility/reindex.js"
   }
 }

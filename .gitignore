@@ -8,3 +8,6 @@ data/guildData.json
 data/guildTags.json
 data/statsData.json
 data/updateRequests.json
+google_api_key.json
+config/dev.json
+config/prod.json
