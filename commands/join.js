@@ -1,3 +1,5 @@
+const { joinVoiceChannel } = require('@discordjs/voice');
+
 module.exports = {
     name: 'join',
     description: 'Join a specific channel',
@@ -7,7 +9,11 @@ module.exports = {
     execute(message, args) {
       //Attempt to join the user's channel
       if(!args.length && message.member.voice && message.member.voice.channel){
-        message.member.voice.channel.join();
+        const connection = joinVoiceChannel({
+          channelId: message.member.voice.channel.id,
+          guildId: message.member.voice.channel.guild.id,
+          adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator,
+        });
         return message.channel.send(`Joined ${message.member.voice.channel.name}`);
       }
 
@@ -18,7 +24,12 @@ module.exports = {
 
       //Joins the provided channel ID
       if(message.guild.channels.cache.has(args[0])){
-        message.guild.channels.cache.get(args[0]).join();
+        //message.guild.channels.cache.get(args[0]).join();
+        const connection = joinVoiceChannel({
+          channelId: args[0],
+          guildId: message.member.voice.channel.guild.id,
+          adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator,
+        });
         return message.channel.send(`Joined ${message.guild.channels.cache.get(args[0]).name}`);
       }
 
@@ -26,7 +37,12 @@ module.exports = {
       const channels = message.guild.channels.cache.array();
       for (var value of channels) {
         if(value.type === 'voice'&& value.name === args.join(' ')){
-          value.join();
+          //value.join();
+          const connection = joinVoiceChannel({
+            channelId: value.id,
+            guildId: message.member.voice.channel.guild.id,
+            adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator,
+          });
           return message.channel.send(`Joined ${args.join(' ')}!`);
         }
       }

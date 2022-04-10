@@ -4,7 +4,7 @@ module.exports = {
         if(command.authorOnly && message.author.id != message.client.authorID){
             return new Validation(false, null);
         }
-        if(command.guildOnly && message.channel.type != "text"){
+        if(command.guildOnly && message.channel.type != "GUILD_TEXT"){
             return new Validation(false, "I can only do that in a guild.");
         }
         if(command.guildOnly && !message.guild.available){
