@@ -2,6 +2,8 @@ const rewardNames = Object.keys(require('./../data/rewardsData.js').rewards)
 const rewards = require('./../data/rewardsData.js').rewards;
 const utility = require('./../utility/utility.js');
 const logger = require('./../utility/logger.js').logger;
+const { getVoiceConnection, createAudioPlayer, createAudioResource, AudioPlayerStatus } = require('@discordjs/voice');
+
 module.exports = {
     name: 'play',
     description: 'Play a sound!',
@@ -11,7 +13,7 @@ module.exports = {
     inVoiceOnly: true,
     execute(message, args) {
       if(!args.length) return;
-      if(message.guild.voice.connection.speaking == true){
+      if(getVoiceConnection(message.guild.id).state.subscription && getVoiceConnection(message.guild.id).state.subscription.player){
         return message.channel.send(`I'm already playing a sound! Wait thx`)
       }
 
@@ -105,13 +107,26 @@ module.exports = {
 };
 
 function playFile(message, filePath){
-  const connection = message.guild.voice.connection
-  const dispatcher = connection.play(filePath);
-  message.client.provider.stats.playedSound(message, filePath);
-  dispatcher.setVolume(message.client.provider.getGuildProperty(message.guild, "volume"));
-  dispatcher.on(`start`, () => {
-     //connection.player.streamingData.pausedTime = 0;
+  //const connection = message.guild.voice.connection
+  //const connection = getVoiceConnection(message.member.voice.channel.guild.id);
+  const connection = getVoiceConnection(message.guild.id);
+  const player = createAudioPlayer()
+  const resource = createAudioResource(filePath);
+  player.play(resource)
+  connection.subscribe(player)
+
+  player.on(AudioPlayerStatus.Idle, () => {
+    player.stop();
   });
+
+
+
+  //const dispatcher = connection.play(filePath);
+  message.client.provider.stats.playedSound(message, filePath);
+  //dispatcher.setVolume(message.client.provider.getGuildProperty(message.guild, "volume"));
+  //dispatcher.on(`start`, () => {
+     //connection.player.streamingData.pausedTime = 0;
+  //});
   logger.info(`Played ${filePath} after ${Date.now() - message.client.messageReceivedTime.getTime()} ms.`);
   //message.channel.send(stringSound(message, sound));
 }

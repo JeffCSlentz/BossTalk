@@ -3,7 +3,12 @@
 const fs = require('fs');
 const {token, authorID} = require('./config.json');
 const Discord = require('discord.js');
-const client = new Discord.Client({intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES, Discord.Intents.FLAGS.DIRECT_MESSAGES]});
+const client = new Discord.Client({intents: [
+  Discord.Intents.FLAGS.GUILDS, 
+  Discord.Intents.FLAGS.GUILD_MESSAGES, 
+  Discord.Intents.FLAGS.DIRECT_MESSAGES, 
+  Discord.Intents.FLAGS.GUILD_VOICE_STATES]}
+);
 const Provider = require('./utility/Provider.js');
 
 //First-Party
