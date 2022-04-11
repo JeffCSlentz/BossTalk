@@ -2,7 +2,7 @@ const { joinVoiceChannel } = require('@discordjs/voice');
 
 module.exports = {
     name: 'join',
-    description: 'Join a specific channel',
+    description: 'Join the voice channel you\'re in.',
     usage: '[channel name/ID]',
     guildOnly: true,
     authorOnly: false,
@@ -21,14 +21,14 @@ module.exports = {
       if (!args.length && !message.member.voice) {
         return message.channel.send(`Provide or join a channel, ${message.author}!`);
       }
-
+      /*
       //Joins the provided channel ID
       if(message.guild.channels.cache.has(args[0])){
         //message.guild.channels.cache.get(args[0]).join();
         const connection = joinVoiceChannel({
           channelId: args[0],
-          guildId: message.member.voice.channel.guild.id,
-          adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator,
+          guildId: message.guild.id,
+          adapterCreator: message.guild.voiceAdapterCreator,
         });
         return message.channel.send(`Joined ${message.guild.channels.cache.get(args[0]).name}`);
       }
@@ -47,5 +47,6 @@ module.exports = {
         }
       }
       return message.channel.send(`I couldn't find a channel named '${args[0]}', ${message.author}!`);
+      */
     },
 };

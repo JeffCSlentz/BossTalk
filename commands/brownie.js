@@ -46,12 +46,12 @@ module.exports = {
         if(br.length > 10){
           data.push(`and ${br.length - 10} others.`)
         }
-        return message.channel.send(data);
+        return message.channel.send(data.join("\n"));
       }
       //else if no mentions
       else if (!message.mentions.users.array().length) {
         data.push(`Try mentioning somebody.`)
-        return message.channel.send(data);
+        return message.channel.send(data.join("\n"));
       }
       else{
         if (message.client.browniePoints.has(message.mentions.users.first().id)){
@@ -60,7 +60,7 @@ module.exports = {
         else{
           data.push(`I don't think they have any brownie points. Lazy bums! (￣。￣)～ｚｚｚ `);
         }
-        return message.channel.send(data);
+        return message.channel.send(data.join("\n"));
       }
     },
 };

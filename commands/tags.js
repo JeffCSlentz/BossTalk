@@ -11,6 +11,6 @@ module.exports = {
       let listOfTags = Object.keys(tags).sort();
 
       data.push(`${listOfTags.join(`, `)}`);
-      return message.channel.send(data);
+      return message.channel.send(data.join("\n"));
     },
 };

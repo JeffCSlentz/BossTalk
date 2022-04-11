@@ -11,11 +11,8 @@ module.exports = {
     execute(message, args) {
       const { commands } = message.client;
       const data = [];
-      let channelReply = "";
 
       if (!args.length) {
-        channelReply = 'I\'ve sent you a DM with all my commands!';
-        data.push(`Here in DM's, my prefix is !`)
         data.push('Here\'s a list of all my commands available to you:');
         listOfCommands = commands.map(command => (validator.helpMessageValidate(message, args, command)?command.name:null));
         listOfCommands = listOfCommands.filter(command => command); //Remove nulls
@@ -31,7 +28,6 @@ module.exports = {
         }
         const command = commands.get(args[0]);
         channelReply = `I sent you a DM about ${args[0]}!`;
-        data.push(`Here in DM's, my prefix is !`)
         data.push(`**Name:** ${command.name}`);
         if (command.description) data.push(`**Description:** ${command.description}`);
         if (command.aliases) data.push(`**Aliases:** ${command.aliases.join(', ')}`);
@@ -39,13 +35,7 @@ module.exports = {
         if (command.cooldown) data.push(`**Cooldown:** ${command.cooldown} second(s)`);
       }
 
-      message.author.send(data, { split: true })
-          .then(() => {
-              if (message.channel.type !== 'dm') {
-                  message.channel.send(channelReply);
-              }
-          })
-          .catch(() => message.reply('it seems like I can\'t DM you!'));
+      return message.channel.send(data.join("\n"));
 
     },
 };
