@@ -14,6 +14,7 @@ module.exports = {
           guildId: message.member.voice.channel.guild.id,
           adapterCreator: message.member.voice.channel.guild.voiceAdapterCreator,
         });
+        connection.subscribe(createAudioPlayer())
         return message.channel.send(`Joined ${message.member.voice.channel.name}`);
       }
 
