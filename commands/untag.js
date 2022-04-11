@@ -64,6 +64,5 @@ module.exports = {
       else{
         return message.channel.send(`I don't have that many sounds! (´･ω･\`)`);
       }
-      return message.channel.send();
     },
 };
