@@ -13,7 +13,7 @@ module.exports = {
     inVoiceOnly: true,
     execute(message, args) {
       if(!args.length) return;
-      if(getVoiceConnection(message.guild.id).state.subscription && getVoiceConnection(message.guild.id).state.subscription.player){
+      if(getVoiceConnection(message.guild.id).state.subscription && !(getVoiceConnection(message.guild.id).state.subscription.player.state.status == AudioPlayerStatus.Idle)){
         return message.channel.send(`I'm already playing a sound! Wait thx`)
       }
 
@@ -110,13 +110,22 @@ function playFile(message, filePath){
   //const connection = message.guild.voice.connection
   //const connection = getVoiceConnection(message.member.voice.channel.guild.id);
   const connection = getVoiceConnection(message.guild.id);
-  const player = createAudioPlayer()
-  const resource = createAudioResource(filePath);
-  player.play(resource)
-  connection.subscribe(player)
+  if(!getVoiceConnection(message.guild.id).state.subscription){
+    console.log("no subscription found, creating player and subscribing this voice connection to it")
+    connection.subscribe(createAudioPlayer())
+  }
 
-  player.on(AudioPlayerStatus.Idle, () => {
-    player.stop();
+  const resource = createAudioResource(filePath);
+  
+  connection.state.subscription.player.play(resource)
+  
+
+  connection.state.subscription.player.on(AudioPlayerStatus.Playing, () => {
+    console.log("Player has started!")
+  });
+
+  connection.state.subscription.player.on(AudioPlayerStatus.Idle, () => {
+    console.log("Player has stopped!")
   });
 
 

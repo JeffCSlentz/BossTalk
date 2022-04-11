@@ -33,7 +33,7 @@ module.exports = {
         data = []
         data.push(dataManip.giveLocationToCreature(message, args[0].toLowerCase(), new Position(args[1].toLowerCase(), args[2].toLowerCase())));
         data.push(`You have ${message.client.browniePoints.get(message.author.id)} brownie points!`);
-        return message.channel.send(data);
+        return message.channel.send(data.join("\n"));
 
       }
       //If the first and second arguments are integers.

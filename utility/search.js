@@ -1,82 +1,82 @@
 const utility = require('./utility.js');
+
 module.exports.search = function(message, args){
-  data = [];
+  let data = {};
+  data.header = [];
+  data.content = [];
   arg = args[0].toLowerCase();
 
   //If the file keyword is used
   if(arg === "file" && args.length > 1){
-    data = searchFileNames(message, args);
+    data = searchFileNames(message, args, data);
     return data;
   }
 
   if(arg == "expansion" || arg == "expansions"){
-    data.push(prettyString("**Expansions:**", message.client.categorySounds.keyArray()))
+    data.header.push(prettyString("**Expansions:**", Array.from(message.client.categorySounds.keys())))
     return data;
   }
 
   if(arg == "location" || arg == "locations"){
-    data.push(`There are a lot of them, try searching by expansion.`);
+    data.header.push(`There are a lot of them, try searching by expansion.`);
     return data;
   }
 
   if(arg == "creature" || arg == "creatures"){
-    data.push(`There are a lot of them, try searching by location or expansion.`);
+    data.header.push(`There are a lot of them, try searching by location or expansion.`);
     return data;
   }
 
   if(arg == "soundID"){
-    data.push(`You gotta enter a specific number.`);
+    data.header.push(`You gotta enter a specific number.`);
     return data;
   }
 
   if(arg =="random"){
     soundID = Math.floor(Math.random() * message.client.numSounds) + 1;
     creature = message.client.allSounds.get(soundID).creatureName;
-    return prettyCreature(message, creature);
+    return prettyCreature(message, creature, data);
   }
 
   //If it's an expansion
   if(message.client.categorySounds.has(arg)){
-    data.push(`**Expansion:** ${arg}`)
-    data.push(prettyString("**Locations:** ", message.client.categorySounds.get(arg).keyArray()));
+    data.header.push(`**Expansion:** ${arg}`)
+    data.header.push(prettyString("**Locations:** ", Array.from(message.client.categorySounds.get(arg).keys())));
     return data;
   }
 
   //If it's a location in an expansion
-  let locationFound = false;
   for (const valueKey of Array.from(message.client.categorySounds.entries())){
     let expansion = valueKey[0]; //String
     let locations = valueKey[1]; //Discord.js Collection
     if(locations.has(arg)){
       locationFound = true;
-      data.push(``);
-      data.push(`**Expansion:** ${expansion}`);
-      data.push(`**Location:** ${arg}`);
-      data.push(prettyString("**Creatures:** ", Array.from(locations.get(arg))));
+      data.header.push(``);
+      data.header.push(`**Expansion:** ${expansion}`);
+      data.header.push(`**Location:** ${arg}`);
+      data.header.push(prettyString("**Creatures:** ", Array.from(locations.get(arg))));
+      return data;
     }
-  }
-  if (locationFound){
-    return data;
   }
 
   //if its a creature
   if (message.client.creatureSounds.has(arg)){
-    return prettyCreature(message, arg);
+    return prettyCreature(message, arg, data);
   }
 
   //if its a soundID
   if (message.client.allSounds.has(parseInt(arg))){
-    return prettySound(message, arg);
+    return prettySound(message, arg, data);
   }
 
   //if it's part of a creature
   let creatureList = [];
   let matchFound = false;
-  for(const creatureName of message.client.creatureSounds.keyArray()){
+  for(const creatureName of Array.from(message.client.creatureSounds.keys())){
     //If the creature's name has the search term
     if(creatureName.includes(arg)){
       if(!matchFound){
-        data.push(`**Matching Creatures**`);
+        data.header.push(`**Matching Creatures**`);
         matchFound = true;
       }
       creatureList.push(`${creatureName}`)
@@ -87,22 +87,22 @@ module.exports.search = function(message, args){
   //If we only found one creature, return that creature.
   if(creatureList.length == 1){
     creature = message.client.creatureSounds.get(creatureList[0]);
-    return prettyCreature(message, creature.name);
+    return prettyCreature(message, creature.name, data);
   }
 
   //If we found more than one creature, push formatted names onto data.
   if(matchFound && creatureList.length < 100){
     for(const creatureName of creatureList){
-      data.push(creatureName);
+      data.content.push(creatureName);
     }
   }
   else if(creatureList.length >= 100){
-    data = (`Too many creatures found. Try reducing your search.`);
+    data.header = (`Too many creatures found. Try reducing your search.`);
   }
 
   //If data has nothing in it.
-  if(!data.length){
-    data.push(`No info found for ${arg}`)
+  if(data.header.length == 0 && data.content.length == 0){
+    data.header.push(`No info found for ${arg}`)
     return data;
   }
   else{
@@ -119,79 +119,78 @@ function prettyString(title, array){
   return aString.substring(0, aString.length-2);
 }
 
-function prettyCreature(message, creatureName){
-  let fData = [];
+function prettyCreature(message, creatureName, data){
 
   creature = message.client.creatureSounds.get(creatureName);
   numSounds = creature.sounds.length;
-  fData.push(`**Creature:** ${creatureName}`);
+  data.header.push(`**Creature:** ${creatureName}`);
 
   if(creature.positions.length == 1 && creature.positions[0].expansion == ""){
-    fData.push("**Expansion:** \`unknown\`");
+    data.header.push("**Expansion:** \`unknown\`");
   }
   else if (creature.positions.length == 1){
-    fData.push(prettyString("**Expansion:** ", creature.positions.map(position => position.expansion)));
+    data.header.push(prettyString("**Expansion:** ", creature.positions.map(position => position.expansion)));
   }
   else{
-    fData.push(prettyString("**Expansions:** ", creature.positions.map(position => position.expansion)));
+    data.header.push(prettyString("**Expansions:** ", creature.positions.map(position => position.expansion)));
   }
 
   if(creature.positions.length == 1 && creature.positions[0].location == ""){
-    fData.push("**Location:** \`unknown\`");
+    data.header.push("**Location:** \`unknown\`");
   }
   else if(creature.positions.length == 1){
-    fData.push(prettyString("**Location:** ", creature.positions.map(position => position.location)));
+    data.header.push(prettyString("**Location:** ", creature.positions.map(position => position.location)));
   }
   else{
-    fData.push(prettyString("**Locations:** ", creature.positions.map(position => position.location)));
+    data.header.push(prettyString("**Locations:** ", creature.positions.map(position => position.location)));
   }
-  fData.push(`${creatureName} has ${numSounds} sounds between index ${creature.sounds[0].id} and ${creature.sounds[numSounds - 1].id}.`);
-  fData.push(`\`\`\``)
+  data.header.push(`${creatureName} has ${numSounds} sounds between index ${creature.sounds[0].id} and ${creature.sounds[numSounds - 1].id}.`);
   for(sound of creature.sounds){
+    /*
     if (utility.listOfStringsLength(fData) > 1800){
       fData.push(`\`\`\``);
-      message.channel.send(fData);
+      message.channel.send(fData.join("\n"));
       fData = [];
       fData.push(`\`\`\``);
     }
+    */
     let fileName = sound.filePath.slice(sound.filePath.indexOf(sound.creatureName) + sound.creatureName.length + 1);
     let spaces = " ".repeat(80 - fileName.length);
-    fData.push(`${sound.id}: ${fileName}\t` + spaces + `${sound.position.expansion} ${sound.position.location}`); //creature/creatureName/filename.ogg
+    data.content.push(`${sound.id}: ${fileName}\t` + spaces + `${sound.position.expansion} ${sound.position.location}`); //creature/creatureName/filename.ogg
   }
-  fData.push(`\`\`\``);
-  return fData;
+  return data;
 }
 
 
-function prettySound(message, soundID){
-  let fData = [];
+function prettySound(message, soundID, data){
   sound = message.client.allSounds.get(parseInt(soundID));
   creature = message.client.creatureSounds.get(sound.creatureName);
   numSounds = creature.sounds.length;
 
-  fData.push(`**Creature:** ${sound.creatureName}`);
-  fData.push(`**Expansion:** ${sound.position.expansion}`);
-  fData.push(`**Location:** ${sound.position.location}`);
-  fData.push(`${sound.creatureName} has ${numSounds} sounds between index ${creature.sounds[0].id} and ${creature.sounds[numSounds - 1].id}.`);
+  data.header.push(`**Creature:** ${sound.creatureName}`);
+  data.header.push(`**Expansion:** ${sound.position.expansion}`);
+  data.header.push(`**Location:** ${sound.position.location}`);
+  data.header.push(`${sound.creatureName} has ${numSounds} sounds between index ${creature.sounds[0].id} and ${creature.sounds[numSounds - 1].id}.`);
 
-  return fData;
+  return data;
 }
 
 //Look through all sounds
-function searchFileNames(message, args){
+function searchFileNames(message, args, data){
   arg = args[1].toLowerCase();
   let matches = message.client.allSounds.filter(sound => sound.filePath.includes(arg));
-  fData = [`\`\`\``];
+
   for(sound of matches.array()){
+    /*
     if (utility.listOfStringsLength(fData) > 1800){
       fData.push(`\`\`\``);
-      message.channel.send(fData);
+      message.channel.send(fData.join("\n"));
       fData = [`\`\`\``];
-    }
+    }*/
     let fileName = sound.filePath.slice(sound.filePath.indexOf(sound.creatureName));
     let spaces = " ".repeat(80 - fileName.length);
-    fData.push(`${sound.id}: ${fileName}\t` + spaces + `${sound.position.expansion} ${sound.position.location}`); //creature/creatureName/filename.ogg
+    data.content.push(`${sound.id}: ${fileName}\t` + spaces + `${sound.position.expansion} ${sound.position.location}`); //creature/creatureName/filename.ogg
   }
-  fData.push(`\`\`\``);
-  return fData;
+
+  return data;
 }

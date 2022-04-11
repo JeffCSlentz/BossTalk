@@ -85,7 +85,7 @@ module.exports = {
       let thanksText = [];
       for(let i = soundIDStart; i <= soundIDEnd; i++){
         if (utility.listOfStringsLength(thanksText) > 1800){
-          message.channel.send(thanksText);
+          message.channel.send(thanksText.join("\n"));
           thanksText = [];
         }
         thanksText.push(module.exports.giveLocationToSound(message, i, position, false));
@@ -97,7 +97,7 @@ module.exports = {
       let thanksText = [];
       for(sound of sounds){
         if (utility.listOfStringsLength(thanksText) > 1800){
-          message.channel.send(thanksText);
+          message.channel.send(thanksText.join("\n"));
           thanksText = [];
         }
         thanksText.push(module.exports.giveLocationToSound(message, sound.id, position, false));
