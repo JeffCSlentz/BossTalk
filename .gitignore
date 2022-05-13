@@ -8,6 +8,8 @@ data/guildData.json
 data/guildTags.json
 data/statsData.json
 data/updateRequests.json
-google_api_key.json
-config/dev.json
-config/prod.json
+data/filePathSounds.json
+data/creatureSounds.json
+data/categorySounds.json
+data/newCreatureSounds.json
+data/allSounds.json
