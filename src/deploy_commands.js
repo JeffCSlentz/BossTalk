@@ -4,10 +4,10 @@ const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId, token, env } = require('../config.json');
 
 const commands = [];
-const commandFiles = fs.readdirSync('./slash_commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./src/slash_commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-	const command = require(`../slash_commands/${file}`);
+	const command = require(`./slash_commands/${file}`);
 	commands.push(command.data.toJSON());
 }
 

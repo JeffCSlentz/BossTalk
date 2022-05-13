@@ -1,5 +1,6 @@
 node_modules/
 config.json
+config_prod.json
 backups/
 logs/
 desktop.ini
