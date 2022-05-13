@@ -8,10 +8,14 @@ module.exports = {
 		.setName('join')
 		.setDescription('Joins your voice channel!'),
 	async execute(interaction) {
-    return await attemptJoin(interaction);
+    let messagePayload = await attemptJoin(interaction);
+    return await interaction.reply(messagePayload)
+    
 	},
   async button(interaction) {
-    return await attemptJoin(interaction);
+    let messagePayload = await attemptJoin(interaction);
+    if(messagePayload) return await interaction.reply(messagePayload);
+    return await interaction.deferUpdate();
   }
 };
 
@@ -21,7 +25,7 @@ async function attemptJoin(interaction){
     const embed = new MessageEmbed()
         .setColor('#ed5121')
         .addField('( ´･･)ﾉ(._.\`)', `You're not in a voice channel you silly goose`)
-    return interaction.reply({embeds:[embed], ephemeral: true});
+    return {embeds:[embed], ephemeral: true};
     /*
     await new Promise(resolve => setTimeout(resolve, 2000));
     return await message.delete();*/
@@ -35,10 +39,12 @@ async function attemptJoin(interaction){
   });
   connection.subscribe(createAudioPlayer())
 
-  return await interaction.deferUpdate();
+  
   const embed = new MessageEmbed()
     .setColor('#0099ff')
-    .setTitle(`(●'◡'●) I'm in`)
+    .setTitle(`(●'◡'●) I'm in`);
+  
+  return {embeds:[embed]};
   let message = await interaction.reply({embeds:[embed], /*ephemeral: true,*/ fetchReply: true});
   await new Promise(resolve => setTimeout(resolve, 2000));
   return await message.delete();
