@@ -1,0 +1,494 @@
+[
+    [
+        "legion",
+        "Legion"
+    ],
+    [
+        "wotlk",
+        "Wrath of the Lich King"
+    ],
+    [
+        "hos",
+        "Halls of Stone"
+    ],
+    [
+        "vanilla",
+        "Vanilla"
+    ],
+    [
+        "bc",
+        "Burning Crusade"
+    ],
+    [
+        "cata",
+        "Cataclysm"
+    ],
+    [
+        "champion",
+        "Trueshot Lodge"
+    ],
+    [
+        "kara",
+        "Karazhan"
+    ],
+    [
+        "antorus",
+        "Antorus, the Burning Throne"
+    ],
+    [
+        "cos",
+        "Court of Stars"
+    ],
+    [
+        "arcway",
+        "The Arcway"
+    ],
+    [
+        "tos",
+        "Tomb of Sargeras"
+    ],
+    [
+        "bm",
+        "The Black Morass"
+    ],
+    [
+        "wod",
+        "Warlords of Draenor"
+    ],
+    [
+        "hm",
+        "Highmaul"
+    ],
+    [
+        "coen",
+        "Cathedral of Eternal Night"
+    ],
+    [
+        "id",
+        "Iron Docks"
+    ],
+    [
+        "sc",
+        "Stonecore"
+    ],
+    [
+        "bt",
+        "Black Temple"
+    ],
+    [
+        "za",
+        "Zul'Aman"
+    ],
+    [
+        "mop",
+        "Mists of Pandaria"
+    ],
+    [
+        "ds",
+        "Dragon Soul"
+    ],
+    [
+        "maly",
+        "Malygos"
+    ],
+    [
+        "uld",
+        "Ulduar"
+    ],
+    [
+        "bh",
+        "Baradin Hold"
+    ],
+    [
+        "eb",
+        "The Everbloom"
+    ],
+    [
+        "sl",
+        "Shadowlands"
+    ],
+    [
+        "hoo",
+        "Halls of Origination"
+    ],
+    [
+        "rfd",
+        "Razorfen Downs"
+    ],
+    [
+        "hyjal",
+        "Mount Hyjal"
+    ],
+    [
+        "nex",
+        "The Nexus"
+    ],
+    [
+        "an",
+        "Azjol-Nerub"
+    ],
+    [
+        "toc",
+        "Trial of the Crusader"
+    ],
+    [
+        "naxx",
+        "Naxxramas"
+    ],
+    [
+        "ulda",
+        "Uldaman"
+    ],
+    [
+        "hfc",
+        "Hellfire Citadel"
+    ],
+    [
+        "sh",
+        "Scarlet Halls"
+    ],
+    [
+        "strat",
+        "Stratholme"
+    ],
+    [
+        "vp",
+        "Vortex Pinnacle"
+    ],
+    [
+        "auch",
+        "Auchindoun"
+    ],
+    [
+        "et",
+        "End Time"
+    ],
+    [
+        "rs",
+        "Ruby Sanctum"
+    ],
+    [
+        "tv",
+        "Lost City of the Tol'vir"
+    ],
+    [
+        "bfd",
+        "Blackfathom Deeps"
+    ],
+    [
+        "gb",
+        "Grim Batol"
+    ],
+    [
+        "fl",
+        "Firelands"
+    ],
+    [
+        "champ",
+        "Trial of the Champion"
+    ],
+    [
+        "neltharion's",
+        "Neltharion's Lair"
+    ],
+    [
+        "sm",
+        "Scarlet Monestary Graveyard"
+    ],
+    [
+        "icc",
+        "Icecrown Citadel"
+    ],
+    [
+        "rfk",
+        "Razorfen Kraul"
+    ],
+    [
+        "sb",
+        "Stormstout Brewery"
+    ],
+    [
+        "fos",
+        "The Forge of Souls"
+    ],
+    [
+        "bwl",
+        "Blackwing Lair"
+    ],
+    [
+        "swp",
+        "Sunwell Plateau"
+    ],
+    [
+        "bfa",
+        "Battle for Azeroth"
+    ],
+    [
+        "docks",
+        "Iron Docks"
+    ],
+    [
+        "durn",
+        "Old Hillsbrad Foothills, Escape from Durnholde Keep"
+    ],
+    [
+        "en",
+        "The Emerald Nightmare"
+    ],
+    [
+        "zf",
+        "Zul'Farrak"
+    ],
+    [
+        "bot",
+        "The Botanica"
+    ],
+    [
+        "doc",
+        ""
+    ],
+    [
+        "sont",
+        "Siege of Niuzao Temple"
+    ],
+    [
+        "brc",
+        "Blackrock Caverns"
+    ],
+    [
+        "aq40",
+        "Temple of Ahn'Qiraj"
+    ],
+    [
+        "vh",
+        "The Violet Hold"
+    ],
+    [
+        "uk",
+        "Utgarde Keep"
+    ],
+    [
+        "tot",
+        "Throne of Thunder"
+    ],
+    [
+        "scholo",
+        "Scholomance"
+    ],
+    [
+        "seth",
+        "Sethekk Halls"
+    ],
+    [
+        "occ",
+        "The Occulus"
+    ],
+    [
+        "ak",
+        "Ahn'kahet: The Old Kingdom"
+    ],
+    [
+        "gnomer",
+        "Gnomeregan"
+    ],
+    [
+        "tt",
+        "Throne of the Tides"
+    ],
+    [
+        "ac",
+        "Auchenai Crypts"
+    ],
+    [
+        "mc",
+        "Molten Core"
+    ],
+    [
+        "hor",
+        "Halls of Reflection"
+    ],
+    [
+        "ssc",
+        "Serpentshrine Cavern"
+    ],
+    [
+        "dm",
+        "The Deadmines"
+    ],
+    [
+        "pos",
+        "The Pit of Saron"
+    ],
+    [
+        "brf",
+        "Blackrock Foundry"
+    ],
+    [
+        "gd",
+        "Gundrak"
+    ],
+    [
+        "soo",
+        "Siege of Orgrimmar"
+    ],
+    [
+        "gss",
+        "Kun-lai Summit"
+    ],
+    [
+        "mech",
+        "Mechanar"
+    ],
+    [
+        "hol",
+        "Halls of Lightning"
+    ],
+    [
+        "hov",
+        "Halls of Valor"
+    ],
+    [
+        "sfk",
+        "Shadowfang Keep"
+    ],
+    [
+        "up",
+        "Utgarde Pinnacle"
+    ],
+    [
+        "zg",
+        "Zul'Gurub"
+    ],
+    [
+        "gruuls",
+        "Gruul's Lair"
+    ],
+    [
+        "arc",
+        "The Arcatraz"
+    ],
+    [
+        "tov",
+        "Trial of Valor"
+    ],
+    [
+        "ant",
+        "Tomb of Sargeras"
+    ],
+    [
+        "sv",
+        "The Steamvault"
+    ],
+    [
+        "st",
+        "Temple of Atal'Hakkar - Sunken Temple"
+    ],
+    [
+        "bf",
+        "The Blood Furnace"
+    ],
+    [
+        "nh",
+        "The Nighthold"
+    ],
+    [
+        "wc",
+        "Wailing Caverns"
+    ],
+    [
+        "dtk",
+        "Drak'Tharon Keep"
+    ],
+    [
+        "bsm",
+        "Bloodmaul Slag Mines"
+    ],
+    [
+        "mags",
+        "Magtheridon's Lair"
+    ],
+    [
+        "bwd",
+        "Blackwing Descent"
+    ],
+    [
+        "sp",
+        "The Slave Pens"
+    ],
+    [
+        "mt",
+        "Mana Tombs"
+    ],
+    [
+        "ramps",
+        "Hellfire Ramparts"
+    ],
+    [
+        "aq20",
+        "Ruins of Ahn'Qiraj"
+    ],
+    [
+        "mgt",
+        "Magisters' Terrace"
+    ],
+    [
+        "tk",
+        "Tempest Keep"
+    ],
+    [
+        "seat",
+        "The Seat of the Triumvirate"
+    ],
+    [
+        "os",
+        "The Obsidian Sanctum"
+    ],
+    [
+        "tojs",
+        "Temple of the Jade Serpent"
+    ],
+    [
+        "tg",
+        "Proving Grounds"
+    ],
+    [
+        "ub",
+        "The Underbog"
+    ],
+    [
+        "highmaul",
+        "Highmaul"
+    ],
+    [
+        "grizzlyhills",
+        "Grizzly Hills"
+    ],
+    [
+        "eoa",
+        "Eye of Azshara"
+    ],
+    [
+        "mos",
+        "Maw of Souls"
+    ],
+    [
+        "td",
+        "Tol Dagor"
+    ],
+    [
+        "fh",
+        "Freehold"
+    ],
+    [
+        "ie",
+        "Island Expedition"
+    ],
+    [
+        "uldir",
+        "Uldir"
+    ],
+    [
+        "ur",
+        "The Underrot"
+    ]
+]
