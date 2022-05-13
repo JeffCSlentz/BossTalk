@@ -8,3 +8,8 @@ data/guildData.json
 data/guildTags.json
 data/statsData.json
 data/updateRequests.json
+data/filePathSounds.json
+data/creatureSounds.json
+data/categorySounds.json
+data/newCreatureSounds.json
+data/allSounds.json
