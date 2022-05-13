@@ -1,12 +1,31 @@
 {
   "name": "boss-talk",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Sounds from WoW Bosses in Discord",
-  "main": "bossTalk.js",
+  "main": "index.js",
   "author": "Jeffrey Slentz",
   "dependencies": {
-    "@discordjs/opus": "^0.1.0",
-    "discord.js": "^12.0.1",
-    "winston": "^3.2.1"
+    "@discordjs/builders": "^0.12.0",
+    "@discordjs/opus": "^0.7.0",
+    "@discordjs/rest": "^0.3.0",
+    "@discordjs/voice": "^0.8.0",
+    "aws-sdk": "^2.1111.0",
+    "discord-api-types": "^0.31.1",
+    "discord.js": "^13.6.0",
+    "discordjs-modal": "^1.0.10",
+    "fuse.js": "^6.5.3",
+    "puppeteer": "^14.0.0",
+    "tweetnacl": "^1.0.3",
+    "winston": "^3.7.2"
+  },
+  "scripts": {
+    "dev-win": "set NODE_ENV=dev && node index.js",
+    "prod-win": "set NODE_ENV=prod && node index.js",
+    "dev-linux": "export NODE_ENV=dev && node index.js",
+    "prod-linx": "export NODE_ENV=prod && node index.js",
+    "reindex-dev-win": "set NODE_ENV=dev&& node utility/reindex.js",
+    "reindex-prod-win": "set NODE_ENV=prod&& node utility/reindex.js",
+    "reindex-dev-linux": "export NODE_ENV=dev && node utility/reindex.js",
+    "reindex-prod-linx": "export NODE_ENV=prod && node utility/reindex.js"
   }
 }
