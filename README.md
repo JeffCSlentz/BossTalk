@@ -11,61 +11,20 @@ Make sure it has permissions to speak and chat, possibly by giving it it's own r
 
 #### Getting Started
 
-`!help` to get a list of all commands available to you.
-
-`!join` to make BossTalk join your channel.
-
-`!play r` or `!r` to play a completely random sound from WoW!
-
-`!volume [0-1]` if he was too loud or too quiet.
-
-`!info` to explore some possible sounds.
-
-`!tag [soundID] [tag name]` to save a sound for later.
-
-For example, type `!tag 27184 runaway` then play it with `!runaway`
+Bosstalk uses slash commands. Type / to get started.
 
 ## Current World of Warcraft Patch
-Currently has creatures from up to 8.3.1
 
+Currently has creatures from up to 9.2
 
 #### Commands
 
-Add the prefix, defaulted to "!", before these commands.
-
-* **help** [none/command]
-  * Shows how to use a command.
+* `play random`: Chooses a random sound.
+* `play creature`: Choose a creature to play a sound from.
+* `play tag`: Play your server's tagged sounds.
   
-* **info** [expansion/location/creature/soundID]
-  * Gives you more info on one of the four things above.
-  * "`!info vanilla`" will show all the dungeons/raids associated with original world of warcraft. 
-  * "`!info ssc`" will show all the creatures in SSC (Serpent Shrine Cavern)
-  * "`!info king`" will show all creatures with king in their name.
-  * "`!info 3483`" will give you info on sound number 3483.
-  
-* **join** [none/channel name/channel ID]
+* `join`: Tries to join your channel.
   * Joins a voice channel. If left blank, will join the voice channel you're in.
   
-* **leave**
-  * Boss Talk will leave it's current channel.
-  
-* **play** [soundID/random/rand/r]
-  * Plays a specific sound, or one at random. Can also be used with just the prefix, aka ![soundID].
-
-* **tag** [soundID] [tag]
-  * Tags a sound with a shortcut you can call with !play [tag] or ![tag].
-  
-* **tags**
-  * Lists the server's current tags.
-  
-* **update** [creature] [expansion] [location]
-  * Suggest some data to a creature.
-
-* **prefix** [prefix]
-  * Change BossTalks prefix from it's default, `!`
-
-* **volume** [0-1]
-  * Sets the bots volume to a value between 0 and 1. IE !volume 0.5 makes the bot half as loud.
-
-* **stats**
-  * Shows some stats.
+* `leave`
+  * Not yet implemented lmao.
