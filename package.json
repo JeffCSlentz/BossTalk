@@ -1,6 +1,6 @@
 {
   "name": "boss-talk",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Sounds from WoW Bosses in Discord",
   "main": "index.js",
   "author": "Jeffrey Slentz",

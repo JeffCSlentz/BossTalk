@@ -17,3 +17,4 @@ data/allSounds.json
 data/creatureSounds.json
 data/sounds.json
 data/guildTagsOld.json
+src/slash_commands/joinAyy.js
