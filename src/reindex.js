@@ -74,9 +74,9 @@ function time(fn, name){
 }
 
 function grabFileSounds(){
-  const creatureFiles = fs.readdirSync(`./sounds/creature/`);
+  const creatureFolders = fs.readdirSync(`./sounds/creature/`).filter(f => !f.endsWith(`.ogg`));
   let _fileSounds = []
-  for (const folder of creatureFiles){
+  for (const folder of creatureFolders){
       _fileSounds.push(...(fs.readdirSync(`./sounds/creature/${folder}`).map(soundFile => `./sounds/creature/${folder}/${soundFile}`)));
   }
 
