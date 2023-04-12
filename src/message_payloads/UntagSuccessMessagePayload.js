@@ -1,5 +1,5 @@
 const { getFileNameFromFilePath } = require('../utility.js')
-const { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 
 class UntagSuccessMessagePayload{
   embeds = [];
@@ -24,9 +24,11 @@ class UntagSuccessMessagePayload{
 
   }
   #buildEmbeds(){
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setColor('#3ba55c')
-        .addField(`(☞ﾟヮﾟ)☞ Untag Success!`, `I untagged **${this.#tagName}** from **${this.#fileName}**`)
+        .addFields([
+          {name: `(☞ﾟヮﾟ)☞ Untag Success!`, value:`I untagged **${this.#tagName}** from **${this.#fileName}**`}
+        ])
     return [embed];
   }
 
@@ -35,7 +37,7 @@ class UntagSuccessMessagePayload{
   }
 
   #buildButtons(){
-    const undoUntagButton = new MessageButton()
+    const undoUntagButton = new ButtonBuilder()
       .setCustomId(JSON.stringify({
         button: UntagSuccessMessagePayload.BUTTON.UNDO_UNTAG,
         command: 'play',
@@ -43,9 +45,9 @@ class UntagSuccessMessagePayload{
         author: this.#author,
       }))
       .setLabel('Undo')
-      .setStyle('SECONDARY')
+      .setStyle(ButtonStyle.Secondary)
         
-    return new MessageActionRow().addComponents([undoUntagButton]);
+    return new ActionRowBuilder().addComponents([undoUntagButton]);
   }
 }
   

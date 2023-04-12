@@ -1,5 +1,5 @@
 const { getFileNameFromFilePath: fileName } = require('../utility.js')
-const { MessageActionRow, MessageAttachment, MessageButton, MessageEmbed, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, MessageAttachment, ButtonBuilder, EmbedBuilder, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 
 class CreatureMessagePayload{
     static ITEMS_PER_PAGE = 15;
@@ -29,10 +29,9 @@ class CreatureMessagePayload{
     }
 
     #buildEmbeds(){
-        const creatureEmbed = new MessageEmbed()
+        const creatureEmbed = new EmbedBuilder()
             .setColor('#0099ff')
             .setTitle(`${this.#creature.name}`)
-            //.addField('Name', this.#creature.name)
             //.attachFiles(this.pic)
             //.setThumbnail(`attachment://${this.#creature.name}.png`)
 
@@ -77,7 +76,7 @@ class CreatureMessagePayload{
             //locations = locations.slice(start,end);
 
             if(this.#curPage == this.#lastPage){
-                fileNames.push(...Array(CreatureMessagePayload.ITEMS_PER_PAGE - arr.length).fill(`\u200B`));
+                fileNames.push(...Array(CreatureMessagePayload.ITEMS_PER_PAGE - fileNames.length).fill(`\u200B`));
                 //[fileNames,locations].forEach(arr => arr.push(...Array(CreatureMessagePayload.ITEMS_PER_PAGE - arr.length).fill(`\u200B`)))
             }
 
@@ -108,9 +107,9 @@ class CreatureMessagePayload{
             default: (i == this.#curSoundIndex) ? true : false
         })).slice(this.#curPage * CreatureMessagePayload.ITEMS_PER_PAGE, (this.#curPage + 1) * CreatureMessagePayload.ITEMS_PER_PAGE)
 
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder()
         .addComponents(
-            new MessageSelectMenu()
+            new StringSelectMenuBuilder()
                 .setCustomId(JSON.stringify({
                     command: 'play',
                     subcommand: 'creature',
@@ -124,7 +123,7 @@ class CreatureMessagePayload{
     #buildButtons(){
 
         //#region Button Definitions
-        const backButton = new MessageButton()
+        const backButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                     button: 'flip', 
                     command: 'play', 
@@ -133,9 +132,9 @@ class CreatureMessagePayload{
                     soundIndex: ((this.#curPage - 1) * CreatureMessagePayload.ITEMS_PER_PAGE)
                 }))
             .setLabel('<--')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
             
-        const nextButton = new MessageButton()
+        const nextButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                     button: 'flip',
                     command: 'play', 
@@ -144,9 +143,9 @@ class CreatureMessagePayload{
                     soundIndex: ((this.#curPage + 1) * CreatureMessagePayload.ITEMS_PER_PAGE)
                 }))
             .setLabel('-->')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
 
-        const playButton = new MessageButton()
+        const playButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                     button: 'play', 
                     command: 'play', 
@@ -155,10 +154,10 @@ class CreatureMessagePayload{
                     soundIndex: this.#curSoundIndex
                 }))
             .setLabel('Play')
-            .setStyle('PRIMARY')
+            .setStyle(ButtonStyle.Primary)
 
 
-        const tagButton = new MessageButton()
+        const tagButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                     button: 'tag',
                     command: 'play', 
@@ -167,10 +166,10 @@ class CreatureMessagePayload{
                     soundIndex: this.#curSoundIndex
                 }))
             .setLabel('Tag')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
         //#endregion
         
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder()
         
         if(this.#pagesNeeded){
             row.addComponents([

@@ -15,9 +15,6 @@ module.exports = {
         const soundFile = interaction.message.embeds[0].fields.find(f => f.name == "Sound").value;
         let voiceConnection = null;
         switch (JSON.parse(interaction.customId).button){
-            case "reroll":
-                const sound = playRandomSound(interaction);
-                return await interaction.update(new RandomMessagePayload(interaction, sound));
             case "play":
                 voiceConnection = getVoiceConnection(interaction.guildId)
                 if(!voiceConnection || voiceConnection.state?.status === VoiceConnectionStatus.Disconnected){
@@ -27,6 +24,9 @@ module.exports = {
                     playFile(interaction, getFilePathFromFileName(creatureName, soundFile))
                     return await interaction.deferUpdate();
                 }
+            case "reroll":
+                const sound = playRandomSound(interaction);
+                return await interaction.update(new RandomMessagePayload(interaction, sound));
             case "creature":
                 return await interaction.reply(`/play creature named ${creatureName}`);
         }
