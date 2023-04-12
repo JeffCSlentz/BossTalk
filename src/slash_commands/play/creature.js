@@ -4,13 +4,10 @@ const { getVoiceConnection, VoiceConnectionStatus } = require('@discordjs/voice'
 const CreatureMessagePayload = require('../../message_payloads/CreatureMessagePayload.js');
 const JoinChannelMessagePayload = require('../../message_payloads/JoinChannelMessagePayload');
 const Fuse = require('fuse.js');
-const tag = require('./tag.js');
-const {Modal, TextInput} = require('discordjs-modal');
-const SetTagModal = require('../../modals/SetTagModal');
 const Creature = require('../../classes/Creature');
 const TaggedSoundsMessagePayload = require('../../message_payloads/TaggedSoundsMessagePayload.js');
 const ErrorMessagePayload = require('../../message_payloads/ErrorMessagePayload.js');
-const { MessageEmbed } = require('discord.js');
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 
 module.exports = {
     data: {name: "creature"},
@@ -64,22 +61,38 @@ module.exports = {
                 soundIndex = creature.sounds.findIndex(s => s.filePath == getFilePathFromFileName(creature.name,fileName));
                 return await interaction.reply(new CreatureMessagePayload(interaction, creature, soundIndex));
             case "tag":
+                const modal = new ModalBuilder()
+                    .setCustomId(JSON.stringify({command:'play', subcommand: 'creature'}))
+                    .setTitle("Tagging a Sound (●'◡'●)")
                 
-                return await interaction.client.modal.send(interaction, new SetTagModal('play', 'creature', creature.sounds[data.soundIndex].filePath));
-                //return await interaction.client.modal.send(interaction, makeModal(creature, data.soundIndex));
+                const tagNameInput = new TextInputBuilder()
+                    .setCustomId('tagNameInput')
+                    .setLabel("Enter a tag for this sound")
+                    .setStyle(TextInputStyle.Short)
+                const firstActionRow = new ActionRowBuilder().addComponents(tagNameInput);
+
+                modal.addComponents(firstActionRow);
+
+                return await interaction.showModal(modal);
         }
     },
     async select(interaction){
         const creature = tryMakeCreature(interaction);
         playCreature(interaction, creature, interaction.values[0]);
-        //const newEmbed = new MessageEmbed(interaction.message.embeds[0]).setDescription('change!')
+        //const newEmbed = new EmbedBuilder(interaction.message.embeds[0]).setDescription('change!')
         //return await interaction.update({embeds: [newEmbed]})
         return await interaction.update(new CreatureMessagePayload(interaction, creature,interaction.values[0]))
     },
     async modal(interaction){
-        const tagName = interaction.fields[0].value;    //user input
-        const filePath = interaction.fields[0].custom_id;
+        const tagName = interaction.fields.getTextInputValue('tagNameInput');    //user input
+        //Grabbing the file name relies on the component row being built this way.
+        const fileName = interaction.message.components[0].components[0].data.options.filter(o => o.default === true)[0].label
+        const creatureName = interaction.message.embeds[0].data.title;
+        const filePath = getFilePathFromFileName(creatureName, fileName);
 
+        if (!filePath){
+            return new ErrorMessagePayload({errorMessage:`Sorry, something went wrong.－O－`});
+        }
         if(tagName.includes('*')){
             return new ErrorMessagePayload({errorMessage:`Sorry, i'm too dumb to handle asterisks`});
         }

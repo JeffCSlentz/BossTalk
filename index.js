@@ -2,17 +2,15 @@
 const {token, doReindex} = require('./config.json');
 const Discord = require('discord.js');
 const client = new Discord.Client({intents: [
-  Discord.Intents.FLAGS.GUILDS, 
-  Discord.Intents.FLAGS.GUILD_MESSAGES, 
-  Discord.Intents.FLAGS.DIRECT_MESSAGES, 
-  Discord.Intents.FLAGS.GUILD_VOICE_STATES]}
+  Discord.GatewayIntentBits.Guilds, 
+  Discord.GatewayIntentBits.GuildMessages, 
+  Discord.GatewayIntentBits.DirectMessages, 
+  Discord.GatewayIntentBits.GuildVoiceStates]}
 );
 const BossTalk = require('./src/BossTalk.js');
 
 //Third-Party
 const logger = require('./src/logger.js').logger;
-const discordjsModal = require('discordjs-modal') // Define this package
-discordjsModal(client); // It is necessary to have your client to be able to know when a modal is executed
 
 //Will check sounds/creature for new .ogg files and save them back into sounds.json
 const {reindex} = require('./src/reindex')
@@ -25,12 +23,12 @@ client.bosstalk = new BossTalk();
 
 client.login(token);
 
-client.once('ready', () => {
+client.once(Discord.Events.ClientReady, c =>{
   logger.info('Ready!')
 });
 
 //Command
-client.on('interactionCreate', async interaction => {
+client.on(Discord.Events.InteractionCreate, async interaction => {
 	if(!interaction.isCommand()) return;
   logger.info("Command " + interaction.commandName + " by someone!")
   
@@ -52,7 +50,7 @@ client.on('interactionCreate', async interaction => {
 });
 
 //Autocomplete
-client.on('interactionCreate', async interaction => {
+client.on(Discord.Events.InteractionCreate, async interaction => {
 	if(!interaction.isAutocomplete()) return;
   
 
@@ -71,7 +69,7 @@ client.on('interactionCreate', async interaction => {
 });
 
 //Button
-client.on('interactionCreate', async interaction => {
+client.on(Discord.Events.InteractionCreate, async interaction => {
 	if(!interaction.isButton()) return;
   
   
@@ -93,8 +91,8 @@ client.on('interactionCreate', async interaction => {
 });
 
 //Select Menu
-client.on('interactionCreate', async interaction => {
-	if(!interaction.isSelectMenu()) return;
+client.on(Discord.Events.InteractionCreate, async interaction => {
+	if(!interaction.isStringSelectMenu()) return;
   
   
   const command = client.bosstalk.slashCommands.get(JSON.parse(interaction.customId).command || interaction.message.interaction.commandName);
@@ -112,10 +110,10 @@ client.on('interactionCreate', async interaction => {
 });
 
 //Modal Submit
-client.on('modal', async (interaction) => {
+client.on(Discord.Events.InteractionCreate, async (interaction) => {
+  if (!interaction.isModalSubmit()) return;
   
-  
-  const command = client.bosstalk.slashCommands.get(JSON.parse(interaction.data.data.custom_id).command);
+  const command = client.bosstalk.slashCommands.get(JSON.parse(interaction.customId).command);
   if (!command) return;
 
   try {

@@ -1,5 +1,5 @@
 const { getFileNameFromFilePath } = require('../utility.js')
-const { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 const TaggedSoundsMessagePayload = require('./TaggedSoundsMessagePayload.js');
 
 class UntagAdminNeededMessagePayload{
@@ -26,9 +26,11 @@ class UntagAdminNeededMessagePayload{
   }
 
   #buildEmbeds(){
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setColor('#ed5121')
-        .addField(`Admin Needed`, `${this.#user} tried to untag **${this.#tagName}** from **${this.#fileName}** but isn't the tag author.`)
+        .addFields([
+          { name: 'Admin Needed', value: `${this.#user} tried to untag **${this.#tagName}** from **${this.#fileName}** but isn't the tag author.`}
+        ])
     return [embed];
   }
 
@@ -37,7 +39,7 @@ class UntagAdminNeededMessagePayload{
   }
 
   #buildButtons(){
-    const undoUntagButton = new MessageButton()
+    const undoUntagButton = new ButtonBuilder()
       .setCustomId(JSON.stringify({
         button: UntagAdminNeededMessagePayload.BUTTON.A_UNTAG,
         command: 'play',
@@ -45,9 +47,9 @@ class UntagAdminNeededMessagePayload{
         author: this.#originalAuthor,
       }))
       .setLabel('Admin: Untag')
-      .setStyle('DANGER')
+      .setStyle(ButtonStyle.Danger)
         
-    return new MessageActionRow().addComponents([undoUntagButton]);
+    return new ActionRowBuilder().addComponents([undoUntagButton]);
   }
 }
   
