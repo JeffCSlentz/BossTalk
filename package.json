@@ -5,18 +5,14 @@
   "main": "index.js",
   "author": "Jeffrey Slentz",
   "dependencies": {
-    "@discordjs/builders": "^0.12.0",
-    "@discordjs/opus": "^0.7.0",
-    "@discordjs/rest": "^0.3.0",
-    "@discordjs/voice": "^0.8.0",
-    "aws-sdk": "^2.1111.0",
-    "discord-api-types": "^0.31.1",
-    "discord.js": "^13.6.0",
-    "discordjs-modal": "^1.0.10",
-    "fuse.js": "^6.5.3",
-    "puppeteer": "^14.0.0",
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/voice": "^0.16.0",
+    "aws-sdk": "^2.1353.0",
+    "discord.js": "^14.9.0",
+    "fuse.js": "^6.6.2",
+    "puppeteer": "^19.8.5",
     "tweetnacl": "^1.0.3",
-    "winston": "^3.7.2"
+    "winston": "^3.8.2"
   },
   "scripts": {
     "dev-win": "set NODE_ENV=dev && node index.js",

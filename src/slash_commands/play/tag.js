@@ -8,7 +8,7 @@ const JoinChannelMessagePayload = require('../../message_payloads/JoinChannelMes
 const UntagSuccessMessagePayload = require('../../message_payloads/UntagSuccessMessagePayload');
 const ErrorMessagePayload = require('../../message_payloads/ErrorMessagePayload');
 const Creature = require('../../classes/Creature.js');
-const { Permissions } = require('discord.js');
+const { PermissionFlagsBits, PermissionsBitField } = require('discord.js');
 const UntagAdminNeededMessagePayload = require('../../message_payloads/UntagAdminNeededMessagePayload.js');
 const BossTalk = require('../../BossTalk.js');
 
@@ -83,7 +83,7 @@ module.exports = {
           if(tagIndex == -1){return interaction.reply(new ErrorMessagePayload({errorMessage:`Untagging failed. Try /play [tag] again.`}));}
           
           //guild member isn't an admin AND they didn't write it.
-          if(interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR) && (guildTags[tagIndex].author == interaction.member.id)){
+          if(interaction.memberPermissions.has(PermissionsBitField.Flags.Administrator) && (guildTags[tagIndex].author == interaction.member.id)){
             return interaction.reply(new UntagAdminNeededMessagePayload(tagName, fileName, interaction.member.displayName));
           }
           
@@ -107,7 +107,7 @@ module.exports = {
         case UntagAdminNeededMessagePayload.BUTTON.A_UNTAG:
 
           //If not an admin, return.
-          if(!interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)){
+          if(!interaction.memberPermissions.has(PermissionsBitField.Flags.Administrator)){
             return interaction.reply(new ErrorMessagePayload({errorMessage: `Hey wait a minute! You're not an admin :(`}))
           }
 

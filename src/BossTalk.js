@@ -29,9 +29,10 @@ class BossTalk extends events.EventEmitter{
         super();
         this.loadFiles();
         this.slashCommands = this.loadSlashCommands(COMMANDS_FOLDER);
-        this.subCommands = this.loadSubCommands(COMMANDS_FOLDER)
+        this.subCommands = this.loadSubCommands(COMMANDS_FOLDER);
         this.getEventListeners = events.getEventListeners;
-        logger.info("BossTalk initialized, data files ready.")
+        this.interactionData = new Discord.Collection;
+        logger.info("BossTalk initialized, data files ready.");
     }
 
     loadFiles(){

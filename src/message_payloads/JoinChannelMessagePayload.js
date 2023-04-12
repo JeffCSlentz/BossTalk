@@ -1,5 +1,5 @@
 const { getFileNameFromFilePath: fileName } = require('../utility.js')
-const { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 
 class JoinChannelMessagePayload{
   embeds = [];
@@ -13,9 +13,11 @@ class JoinChannelMessagePayload{
   }
 
   #buildEmbeds(){
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setColor('#ed5121')
-        .addField('¯\\\_(ツ)_/¯', `I tried to play a sound but I'm not in a channel!`)
+        .addFields([
+          {name: '¯\\\_(ツ)_/¯', value:'I tried to play a sound but I\'m not in a channel!'}
+        ])
     return [embed];
   }
 
@@ -24,14 +26,14 @@ class JoinChannelMessagePayload{
   }
 
   #buildButtons(){
-    const joinButton = new MessageButton()
+    const joinButton = new ButtonBuilder()
         .setCustomId(JSON.stringify({
                 command: 'join',
             }))
         .setLabel('Join?')
-        .setStyle('SECONDARY')
+        .setStyle(ButtonStyle.Secondary)
         
-    return new MessageActionRow().addComponents([joinButton]);
+    return new ActionRowBuilder().addComponents([joinButton]);
   }
 }
   

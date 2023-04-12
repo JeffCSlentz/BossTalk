@@ -1,6 +1,6 @@
 const { joinVoiceChannel, createAudioPlayer} = require('@discordjs/voice');
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 //const logger = require('./../src/logger.js').logger;
 
 module.exports = {
@@ -22,9 +22,11 @@ module.exports = {
 async function attemptJoin(interaction){
   //If user not in a channel
   if ( !interaction.member.voice.channel ) {
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setColor('#ed5121')
-        .addField('( ´･･)ﾉ(._.\`)', `You're not in a voice channel you silly goose`)
+        .addFields([
+          {name: '( ´･･)ﾉ(._.\`)', value:`You're not in a voice channel you silly goose`}
+        ])
     return {embeds:[embed], ephemeral: true};
     /*
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -40,7 +42,7 @@ async function attemptJoin(interaction){
   connection.subscribe(createAudioPlayer())
 
   
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setColor('#0099ff')
     .setTitle(`(●'◡'●) I'm in`);
   
