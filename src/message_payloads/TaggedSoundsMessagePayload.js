@@ -1,5 +1,5 @@
-const { getFileNameFromFilePath: fileName, attachSoundstoTags } = require('../utility.js')
-const { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } = require('discord.js');
+const { getFileNameFromFilePath, attachSoundstoTags } = require('../utility.js')
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
 
 class TaggedSoundsMessagePayload{
     static ITEMS_PER_PAGE = 15;
@@ -31,20 +31,24 @@ class TaggedSoundsMessagePayload{
     #buildEmbeds(){
 
         if(this.#tags.length == 0){
-            return [new MessageEmbed()
-            .setColor('#0099ff')
-            .setTitle(`＞﹏＜ No tags left!`)
-            .addField('ᓚᘏᗢ', `Here's a cat instead`)];
+            return [
+                new EmbedBuilder()
+                    .setColor('#0099ff')
+                    .setTitle(`＞﹏＜ No tags left!`)
+                    .addFields([
+                        { name: 'ᓚᘏᗢ', value: `Here's a cat instead`}
+                    ])
+            ];
         } 
 
-        const tagsEmbed = new MessageEmbed()
+        const tagsEmbed = new EmbedBuilder()
             .setColor('#0099ff')
             .setTitle('Tags')
             .setThumbnail('https://i.imgur.com/AfFp7pu.png');
 
 
         let tagNames = this.#tags.map(t => t.tag);
-        let fileNames = this.#tags.map(t => fileName(t.sound.filePath));
+        let fileNames = this.#tags.map(t => getFileNameFromFilePath(t.filePath));
 
         [tagNames, fileNames].forEach(arr => arr[this.#curTagIndex] = `**${arr[this.#curTagIndex]}**`);
 
@@ -80,14 +84,14 @@ class TaggedSoundsMessagePayload{
         //ids starts counting from 1
         const options = this.#tags.map((t, i) => ({
             label: `${t.tag}`,
-            description: fileName(t.filePath),
+            description: getFileNameFromFilePath(t.filePath),
             value: (i).toString(),
             default: (i == this.#curTagIndex) ? true : false
         })).slice(this.#curPage * TaggedSoundsMessagePayload.ITEMS_PER_PAGE, (this.#curPage + 1) * TaggedSoundsMessagePayload.ITEMS_PER_PAGE)
 
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder()
         .addComponents(
-            new MessageSelectMenu()
+            new StringSelectMenuBuilder()
                 .setCustomId(JSON.stringify({
                     command: 'play',
                     subcommand: 'tag',
@@ -102,7 +106,7 @@ class TaggedSoundsMessagePayload{
     #buildButtons(){
 
         //#region Button Definitions
-        const backButton = new MessageButton()
+        const backButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                 button: TaggedSoundsMessagePayload.BUTTON.FLIP,
                 command: 'play', 
@@ -111,9 +115,9 @@ class TaggedSoundsMessagePayload{
                 tagIndex: ((this.#curPage - 1) * TaggedSoundsMessagePayload.ITEMS_PER_PAGE)
             }))
             .setLabel('<--')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
             
-        const nextButton = new MessageButton()
+        const nextButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                 button: TaggedSoundsMessagePayload.BUTTON.FLIP,
                 command: 'play', 
@@ -122,9 +126,9 @@ class TaggedSoundsMessagePayload{
                 tagIndex: ((this.#curPage + 1) * TaggedSoundsMessagePayload.ITEMS_PER_PAGE)
             }))
             .setLabel('-->')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
 
-        const playButton = new MessageButton()
+        const playButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                 button: TaggedSoundsMessagePayload.BUTTON.PLAY, 
                 command: 'play', 
@@ -133,9 +137,9 @@ class TaggedSoundsMessagePayload{
                 tagIndex: this.#curTagIndex
             }))
             .setLabel('Play')
-            .setStyle('PRIMARY')
+            .setStyle(ButtonStyle.Primary)
 
-        const creatureButton = new MessageButton()
+        const creatureButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                 button: TaggedSoundsMessagePayload.BUTTON.CREATURE_T, 
                 command: 'play', 
@@ -143,9 +147,9 @@ class TaggedSoundsMessagePayload{
                 index: (this.#curTagIndex - (this.#curPage*TaggedSoundsMessagePayload.ITEMS_PER_PAGE))
             }))
             .setLabel('Show Creature')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
             
-        const tagButton = new MessageButton()
+        const tagButton = new ButtonBuilder()
             .setCustomId(JSON.stringify({
                 button: TaggedSoundsMessagePayload.BUTTON.TRY_UNTAG,
                 command: 'play', 
@@ -154,10 +158,10 @@ class TaggedSoundsMessagePayload{
                 tagIndex: this.#curTagIndex
             }))
             .setLabel('Untag')
-            .setStyle('SECONDARY')
+            .setStyle(ButtonStyle.Secondary)
         //#endregion
         
-        const row = new MessageActionRow()
+        const row = new ActionRowBuilder()
         
         if(this.#pagesNeeded){
             row.addComponents([

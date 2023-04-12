@@ -1,5 +1,5 @@
 const { getFileNameFromFilePath: fileName } = require('../utility.js')
-const { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } = require('discord.js');
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, StringSelectMenuBuilder } = require('discord.js');
 
 class ErrorMessagePayload{
   embeds = [];
@@ -20,9 +20,11 @@ class ErrorMessagePayload{
   }
 
   #buildEmbeds(){
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
         .setColor('#ed5121')
-        .addField(this.#title, this.#errorMessage)
+        .addFields([
+          {name: this.#title, value: this.#errorMessage}
+        ])
     return [embed];
   }
 }
