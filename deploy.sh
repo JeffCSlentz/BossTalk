@@ -8,7 +8,6 @@ echo "Updating BossTalk from Git"
 git pull
 
 echo "Installing BossTalk dependencies"
-sudo rm -rf node_modules package-lock.json
 npm install
 
 echo "Updating Commands"
