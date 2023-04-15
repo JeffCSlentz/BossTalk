@@ -22,6 +22,10 @@
     "reindex-dev-win": "set NODE_ENV=dev&& node utility/reindex.js",
     "reindex-prod-win": "set NODE_ENV=prod&& node utility/reindex.js",
     "reindex-dev-linux": "export NODE_ENV=dev && node utility/reindex.js",
-    "reindex-prod-linx": "export NODE_ENV=prod && node utility/reindex.js"
+    "reindex-prod-linx": "export NODE_ENV=prod && node utility/reindex.js",
+    "dev-deploy-commands-linux": "export NODE_ENV=dev && node src/deploy_commands.js",
+    "prod-deploy-commands-linux": "export NODE_ENV=prod && node src/deploy_commands.js",
+    "dev-deploy-commands-windows": "set NODE_ENV=dev && node src/deploy_commands.js",
+    "prod-deploy-commands-windows": "set NODE_ENV=prod && node src/deploy_commands.js"
   }
 }

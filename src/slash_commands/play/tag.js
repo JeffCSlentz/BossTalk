@@ -100,7 +100,6 @@ module.exports = {
             i,
           ));*/
           await new Promise(resolve => setTimeout(resolve, 500));
-          //return await interaction.followUp(new UntagSuccessMessagePayload(tagName, fileName));
           return await interaction.reply(new UntagSuccessMessagePayload(tagName, fileName, guildTags[tagIndex].author));
         
         //This untag request came from a button attached to an UntagAdminNeededMessagePayload
