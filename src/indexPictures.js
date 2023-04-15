@@ -28,9 +28,6 @@ async function run () {
             if(skipReply.length > 1) {console.log(skipReply.join(' '));skipReply=['Skipped '];}
 
             await doPuppet(creatureName, false);
-
-            
-    
         }   
     } catch (error) {
         console.log('\n\nError!!')
