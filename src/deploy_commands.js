@@ -24,5 +24,3 @@ if(env == 'dev'){
 		.catch(console.error);
 
 }
-process.exit();
-
