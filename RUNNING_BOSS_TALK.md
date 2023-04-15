@@ -16,3 +16,5 @@ OR
 To start Boss Talk:
 `forever ./index.js`
 
+# Updating Boss Talk
+Github has an action set up to reach into the linux instance and kill and restart bosstalk.
