@@ -18,7 +18,8 @@ class AllTagsMessagePayload{
         if(this.#tags.length == 0){
             return noTags();
         }
-        let tagNames = this.#tags.map(t => t.length > 15 ? t.tag.slice(0,15) + '...' : t.tag);
+        let tagNames = this.#tags.map(t => (t.length > 15) ? t.tag.slice(0,15) + '...' : t.tag);
+        tagNames = [...new Set(tagNames)];
         let embeds = [];
         for(let i = 0; i < this.#embedsNeeded; i++){
             let tagIndex = i * ITEMS_PER_EMBED
