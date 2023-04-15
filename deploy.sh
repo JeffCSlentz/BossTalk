@@ -1,5 +1,5 @@
 echo "Stopping BossTalk"
-sudo pm2 stop index
+pm2 stop index
 
 echo "Jumping to BossTalk folder"
 cd ~/BossTalk
@@ -9,7 +9,7 @@ git pull
 
 echo "Installing BossTalk dependencies"
 sudo rm -rf node_modules package-lock.json
-sudo npm install
+npm install
 
 echo "Updating Commands"
 node ./src/deploy_commands.js
