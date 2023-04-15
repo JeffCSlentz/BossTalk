@@ -1,0 +1,20 @@
+name: Deploying
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.BOSS_TALK_VULTR_IP }}
+          username: ${{ secrets.BOSS_TALK_VULTR_NAME }}
+          password : ${{ secrets.BOSS_TALK_VULTR_PW }}
+          script: cd BossTalk && sh deploy.sh
