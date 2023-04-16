@@ -1,6 +1,6 @@
 const { getFileNameFromFilePath, attachSoundstoTags } = require('../utility.js')
 const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, StringSelectMenuBuilder, ButtonStyle } = require('discord.js');
-const ITEMS_PER_EMBED = 180;
+const ITEMS_PER_EMBED = 240;
 const COLUMNS = 3;
 class AllTagsMessagePayload{
     #tags = [];
