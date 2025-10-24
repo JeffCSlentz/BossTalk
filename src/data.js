@@ -46,16 +46,25 @@ module.exports = {
      * @param {*} filePath 
      * @returns A JSON object or array
      */
-    readJSONObject(filePath){
+    readJSONObject(filePath) {
         try {
-            result = JSON.parse(fs.readFileSync(filePath));
+            // Check if file exists
+            if (!fs.existsSync(filePath)) {
+                logger.warn(`${filePath} not found. Creating empty JSON file.`);
+                fs.writeFileSync(filePath, '{}', 'utf8');
+            }
+
+            const data = fs.readFileSync(filePath, 'utf8');
+            const result = JSON.parse(data);
+
             logger.info(`Loaded ${filePath}`);
             return result;
-        } catch(error) {
-            logger.error(`Something went wrong loading ${filePath}.`);
-            throw(error);
+        } catch (error) {
+            logger.error(`Something went wrong loading ${filePath}: ${error.message}`);
+            throw error;
         }
-    },
+},
+
 
     /**
      * Writes a JSON object/array to a JSON file.
