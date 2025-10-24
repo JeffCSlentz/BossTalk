@@ -5,10 +5,11 @@
   "main": "index.js",
   "author": "Jeffrey Slentz",
   "dependencies": {
-    "@discordjs/opus": "^0.9.0",
+    "@discordjs/opus": "^0.10.0",
     "@discordjs/voice": "^0.16.0",
     "aws-sdk": "^2.1353.0",
     "discord.js": "^14.9.0",
+    "ffmpeg-static": "^5.2.0",
     "fuse.js": "^6.6.2",
     "puppeteer": "^19.8.5",
     "tweetnacl": "^1.0.3",

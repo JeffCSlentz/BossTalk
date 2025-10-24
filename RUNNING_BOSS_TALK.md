@@ -18,3 +18,10 @@ To start Boss Talk:
 
 # Updating Boss Talk
 Github has an action set up to reach into the linux instance and kill and restart bosstalk.
+
+
+### Common Issues
+
+FFMPeg needs to be installed (I added it to the npm packages, should be ok now)
+
+"@discordjs/opus" relies on a precompiled C++ binary avaiable at https://github.com/discordjs/opus/releases/tag/v0.10.0
