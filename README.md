@@ -15,7 +15,7 @@ Bosstalk uses slash commands. Type / to get started.
 
 ## Current World of Warcraft Patch
 
-Currently has creatures from up to 9.2
+Currently has creatures from up to 11.2.5
 
 #### Commands
 
