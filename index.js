@@ -1,6 +1,7 @@
 //#region Variables
 const {token, doReindex} = require('./config.json');
 const Discord = require('discord.js');
+const { getVoiceConnection } = require('@discordjs/voice');
 const client = new Discord.Client({intents: [
   Discord.GatewayIntentBits.Guilds, 
   Discord.GatewayIntentBits.GuildMessages, 
@@ -13,7 +14,8 @@ const BossTalk = require('./src/BossTalk.js');
 const logger = require('./src/logger.js').logger;
 
 //Will check sounds/creature for new .ogg files and save them back into sounds.json
-const {reindex} = require('./src/reindex')
+const {reindex} = require('./src/reindex');
+const { Logger } = require('winston');
 if (doReindex) reindex();
 
 //Load run-time data
@@ -141,6 +143,33 @@ client.on(Discord.Events.InteractionCreate, async (interaction) => {
     logger.error(error)
     if((new Date(Date.now()) - interaction.createdAt) < 2500){
       return await interaction.deferUpdate();
+    }
+  }
+});
+
+//Voice State Changed
+client.on(Discord.Events.VoiceStateUpdate, async(oldState, newState) => {
+  const connection = getVoiceConnection(oldState.guild.id);
+   if (!connection) return;
+
+  const botId = client.user.id;
+  const botChannelId = connection.joinConfig.channelId;
+
+
+  // 1️⃣ Bot was disconnected from a channel
+  if (oldState.member.id === botId && !newState.channelId && connection) {
+    connection.destroy();
+    logger.info(`Bot was disconnected from ${oldState.guild.name}.`);
+    return;
+  }
+
+  // 2️⃣ Someone left the bot's channel — check if it's now empty
+  if (oldState.channelId === botChannelId && oldState.channel) {
+    // Count members still in the channel excluding the bot
+    const nonBotMembers = oldState.channel.members.filter(m => !m.user.bot);
+    if (nonBotMembers.size === 0) {
+      connection.destroy();
+      logger.info(`No users left in ${oldState.guild.name} — disconnected.`);
     }
   }
 });
