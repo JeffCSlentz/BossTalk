@@ -1,8 +1,5 @@
-import path from 'path';
-import dotenv from 'dotenv';
+import './loadEnv';
 import type { RunnerConfig } from './runner';
-
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 function require_env(key: string): string {
   const val = process.env[key];

@@ -71,15 +71,27 @@ export async function runSync(config: RunnerConfig): Promise<void> {
   const transcription = buildTranscription(config);
   const source = buildSource(config);
 
-  // Without this, a manual Ctrl+C (or the process being stopped some other
-  // way) skips transcription.close() entirely — on Windows in particular, we
-  // can't assume the OS will clean up the Python worker for us (see the
-  // AssignProcessToJobObject flakiness we hit earlier), so an interrupted run
-  // could leave a ~3GB python.exe sitting in VRAM indefinitely.
+  // On Ctrl+C, Windows delivers the signal to the whole console process group
+  // at once — both this process AND the Python worker child get interrupted
+  // independently and simultaneously (that's why a crashed-worker warning can
+  // show up right as a sync is stopping — the in-flight transcription dies on
+  // its own, not because we told it to). Because of that, we can't race a
+  // separate exit path against the main loop: an earlier version called
+  // process.exit() directly from the signal handler while the loop's current
+  // await was still resolving, which could enqueue an Algolia record *after*
+  // the interrupt-triggered flush had already run, stranding it unsent. So
+  // instead: just set a flag, let the in-flight file finish naturally (it'll
+  // fail fast if its worker died, same as any other transcription error), and
+  // let the loop stop itself and fall through to the normal finally-block
+  // cleanup below — one exit path, not two.
+  let interrupted = false;
   const shutdown = () => {
-    logger.warn('Sync interrupted — closing transcription worker before exit.');
-    transcription.close?.();
-    process.exit(130);
+    if (interrupted) {
+      logger.warn('Second interrupt — forcing exit.');
+      process.exit(130);
+    }
+    interrupted = true;
+    logger.warn('Interrupt received — finishing current file, then stopping. Press Ctrl+C again to force exit.');
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
@@ -142,6 +154,11 @@ export async function runSync(config: RunnerConfig): Promise<void> {
     const seenCreatures = new Set<string>();
 
     for (const sound of sounds) {
+      if (interrupted) {
+        logger.warn(`Stopping early — ${processed}/${sounds.length} processed before interrupt.`);
+        break;
+      }
+
       const creatureSlug = creatureSlugOf(sound.fileKey);
       if (!seenCreatures.has(creatureSlug)) {
         seenCreatures.add(creatureSlug);
@@ -193,6 +210,16 @@ export async function runSync(config: RunnerConfig): Promise<void> {
   } finally {
     process.off('SIGINT', shutdown);
     process.off('SIGTERM', shutdown);
+    await algolia?.flush();
     transcription.close?.();
+  }
+
+  // Cleanup above is done, so it's safe to exit now without racing it. Needed
+  // for long-lived (non-run-once) mode — otherwise an interrupted sync would
+  // just fall through to starting the cron scheduler instead of actually
+  // stopping.
+  if (interrupted) {
+    logger.warn('Exiting after interrupt.');
+    process.exit(130);
   }
 }
