@@ -39,17 +39,18 @@ export class CASCRemoteSource implements SoundSource {
     const listfile = await this.fetchListfile();
     const sounds: DiscoveredSound[] = [];
 
-    for (const [, filePath] of listfile) {
+    for (const [id, filePath] of listfile) {
       if (!filePath.startsWith(SOUND_CREATURE_PREFIX)) continue;
       if (!filePath.endsWith('.ogg')) continue;
       const parts = filePath.split('/');
       const creature = parts[2];
-      const file = parts[3];
+      // Flatten any subfolder nesting under the creature (see listfileCache.ts).
+      const file = parts.slice(3).join('_');
       if (!creature || !file) continue;
       if (creatureFilter && creature !== creatureFilter.toLowerCase()) continue;
       const fileKey = `sounds/creature/${creature}/${file}`;
       if (isBannedPath(fileKey)) continue;
-      sounds.push({ fileKey });
+      sounds.push({ fileKey, _fileDataID: id } as DiscoveredSound & { _fileDataID: number });
     }
     return sounds;
   }
@@ -59,16 +60,8 @@ export class CASCRemoteSource implements SoundSource {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { default: CASCClient } = await (eval('import("@rhyster/wow-casc-dbc")') as Promise<any>);
 
-    const listfile = await this.fetchListfile();
-    const normalizedKey = sound.fileKey
-      .replace(/^sounds\//, 'sound/')
-      .toLowerCase();
-
-    let fileDataID: number | undefined;
-    for (const [id, fp] of listfile) {
-      if (fp === normalizedKey) { fileDataID = id; break; }
-    }
-    if (!fileDataID) throw new Error(`fileDataID not found for ${sound.fileKey}`);
+    const fileDataID = (sound as DiscoveredSound & { _fileDataID: number })._fileDataID;
+    if (!fileDataID) throw new Error(`No fileDataID attached for ${sound.fileKey}`);
 
     const version = await CASCClient.getProductVersion(this.region, this.product);
     const client = new CASCClient(this.region, this.product, version);

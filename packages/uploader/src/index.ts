@@ -5,6 +5,7 @@ import { startScheduler } from './scheduler';
 
 const runOnce = process.argv.includes('--run-once');
 const dryRun = process.argv.includes('--dry-run');
+const forceReindex = process.argv.includes('--force');
 const creatureIdx = process.argv.indexOf('--creature');
 const creatureFilter = creatureIdx >= 0 ? process.argv[creatureIdx + 1] : undefined;
 
@@ -19,7 +20,7 @@ async function main() {
     process.exit(1);
   }
 
-  const sync = () => runSync({ ...config, dryRun, creatureFilter });
+  const sync = () => runSync({ ...config, dryRun, creatureFilter, forceReindex });
 
   // Always run once immediately on startup
   await sync();

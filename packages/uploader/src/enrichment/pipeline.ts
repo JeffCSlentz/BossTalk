@@ -4,17 +4,30 @@ import { AlgoliaRecord, objectIDFromFileKey } from '@bosstalk/shared';
 import { TranscriptionService } from '../transcription/TranscriptionService';
 import { AlgoliaClient } from '../algoliaClient';
 import { R2Client } from '../r2Client';
-import { categorizeFromPath } from './categorize';
 import { generateTags } from './tagGenerator';
 import { fetchCreatureImage } from './creatureImage';
 import { padAudio, cleanupPadded } from './padAudio';
-import logger from '../logger';
+import logger, { formatError } from '../logger';
+
+// Whisper (local and OpenAI) hallucinate these on non-speech audio — silence,
+// roars, growls — instead of returning an empty transcript. Filter them out so
+// they don't get indexed as if they were real dialogue.
+const HALLUCINATION_EXACT = ['thanks for watching!', 'thanks for watching', 'thank you for watching!', 'thank you for watching'];
+const HALLUCINATION_SUBSTRINGS = ['translation by', 'transcription by', 'subscribe'];
+
+function isHallucinatedTranscript(text: string): boolean {
+  const normalized = text.trim().toLowerCase();
+  if (!normalized) return false;
+  if (HALLUCINATION_EXACT.includes(normalized)) return true;
+  return HALLUCINATION_SUBSTRINGS.some((phrase) => normalized.includes(phrase));
+}
 
 export interface PipelineConfig {
   transcription: TranscriptionService;
   algolia?: AlgoliaClient;
   r2?: R2Client;
   skipTranscription?: boolean;
+  skipTagging?: boolean;
   dryRun?: boolean;
 }
 
@@ -48,7 +61,6 @@ export async function processFile(
     zone: '',
     zoneAliases: [],
     instanceType: '',
-    category: categorizeFromPath(fileKey),
     tags: [],
     durationSeconds: 0,
     enrichedAt: 0,
@@ -67,6 +79,9 @@ export async function processFile(
       if (!alreadyExists) {
         await config.r2!.upload(paddedPath, fileKey);
         uploaded = true;
+        logger.debug(`${fileKey} → uploaded to R2 (${paddedBytes} bytes padded)`);
+      } else {
+        logger.debug(`${fileKey} → already in R2, skipped upload`);
       }
     }
   } finally {
@@ -78,10 +93,17 @@ export async function processFile(
   if (!config.skipTranscription && !config.dryRun) {
     try {
       const result = await config.transcription.transcribe(localPath);
-      record.transcript = result.text;
-    } catch {
+      if (isHallucinatedTranscript(result.text)) {
+        record.transcript = '';
+        logger.debug(`${fileKey} → discarded hallucinated transcript: "${result.text}"`);
+      } else {
+        record.transcript = result.text;
+      }
+    } catch (err) {
       record.transcript = '';
+      logger.warn(`${fileKey} → transcription failed: ${formatError(err)}`);
     }
+    logger.info(`${fileKey} → "${record.transcript || '(no speech detected)'}"`);
   }
 
   // 3. Creature image
@@ -89,37 +111,38 @@ export async function processFile(
     try {
       const img = await fetchCreatureImage(creatureSlug);
       record.creatureImageUrl = img.imageUrl;
-    } catch {
-      // non-fatal
+      logger.debug(`${fileKey} → creature image found`);
+    } catch (err) {
+      logger.debug(`${fileKey} → no creature image found: ${formatError(err)}`);
     }
   }
 
   // 4. AI tag generation
-  if (!config.dryRun) {
+  if (!config.dryRun && !config.skipTagging) {
     try {
       const enrichment = await generateTags({
         creatureName,
         transcript: record.transcript,
         expansion: record.expansion,
         zone: record.zone,
-        category: record.category,
       });
       record.tags = enrichment.tags;
       record.expansionAliases = enrichment.expansionAliases;
       record.zoneAliases = enrichment.zoneAliases;
-      record.category = enrichment.category;
       record.enrichedAt = Math.floor(Date.now() / 1000);
       enriched = true;
-    } catch {
-      // Upsert with partial data rather than failing
+      logger.debug(`${fileKey} → tags: [${enrichment.tags.join(', ')}]`);
+    } catch (err) {
+      logger.debug(`${fileKey} → tag generation failed: ${formatError(err)}`);
     }
   }
 
   // 5. Index to Algolia
   if (config.dryRun) {
-    logger.info(`[dry-run] Would index: ${record.objectID} (category: ${record.category})`);
+    logger.info(`[dry-run] Would index: ${record.objectID}`);
   } else {
     await config.algolia!.upsert(record);
+    logger.debug(`${fileKey} → indexed to Algolia`);
   }
 
   return { fileKey, record, uploaded, enriched };

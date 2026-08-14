@@ -1,5 +1,5 @@
 import cron from 'node-cron';
-import logger from './logger';
+import logger, { formatError } from './logger';
 
 type RunFn = () => Promise<void>;
 
@@ -9,7 +9,7 @@ export function startScheduler(cronExpression: string, run: RunFn): cron.Schedul
     try {
       await run();
     } catch (err) {
-      logger.error(`Scheduled sync failed: ${err}`);
+      logger.error(`Scheduled sync failed: ${formatError(err)}`);
     }
   });
   logger.info(`Scheduler started — next run at cron: ${cronExpression}`);

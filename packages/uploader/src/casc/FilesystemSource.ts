@@ -30,12 +30,11 @@ export class FilesystemSource implements SoundSource {
     const discovered: DiscoveredSound[] = [];
     for (const creature of creatures) {
       const creaturePath = path.join(creatureDir, creature);
-      const files = fs.readdirSync(creaturePath);
-      for (const file of files) {
-        if (!file.endsWith('.ogg')) continue;
-        const localPath = path.join(creaturePath, file);
+      for (const { relParts, localPath } of walkOggFiles(creaturePath)) {
         const stat = fs.statSync(localPath);
         if (stat.size < MIN_FILE_SIZE_BYTES) continue;
+        // Flatten any subfolder nesting under the creature (see listfileCache.ts).
+        const file = relParts.join('_');
         const fileKey = `sounds/creature/${creature}/${file}`;
         if (isBannedPath(fileKey)) continue;
         discovered.push({ fileKey, localPath });
@@ -48,4 +47,22 @@ export class FilesystemSource implements SoundSource {
     if (!sound.localPath) throw new Error(`No localPath for ${sound.fileKey}`);
     fs.copyFileSync(sound.localPath, destPath);
   }
+}
+
+interface WalkedOggFile {
+  relParts: string[];
+  localPath: string;
+}
+
+function walkOggFiles(dir: string, relParts: string[] = []): WalkedOggFile[] {
+  const results: WalkedOggFile[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...walkOggFiles(fullPath, [...relParts, entry.name]));
+    } else if (entry.name.endsWith('.ogg')) {
+      results.push({ relParts: [...relParts, entry.name], localPath: fullPath });
+    }
+  }
+  return results;
 }

@@ -15,15 +15,28 @@ WoW install (CASC)
 For each new sound (not yet in R2):
   1. Pad audio     — sox adds 0.1s silence at start, 0.8s at end
   2. Upload        — padded .ogg → Cloudflare R2
-  3. Transcribe    — faster-whisper (local GPU, Windows only)
+  3. Transcribe    — faster-whisper (local GPU) or OpenAI whisper-1
   4. Creature image — fetched from WoWHead
-  5. AI tags       — Claude generates tags, expansion/zone aliases
+  5. AI tags       — Claude generates tags, expansion/zone aliases (optional, see SKIP_TAGGING)
   6. Index         — Algolia record upserted
+
+Filtering (both applied at discovery time, before any upload/transcribe work):
+  - Generic combat SFX with no spoken line (filenames containing "attack", "wound",
+    "crit", "battleshout" — see BANNED_KEYWORDS in @bosstalk/shared) are dropped.
+  - Files under 4200 bytes (encoded size) are dropped as too small to contain
+    useful audio — see MIN_FILE_SIZE_BYTES in @bosstalk/shared.
 
 Diff detection:
   - Lists R2 objects under sounds/creature/
   - Compares against what's in the WoW install
   - Only processes files not already in R2
+
+Manifest-change short-circuit (SOURCE_MODE=wow-install only):
+  - Every run first checks whether the community listfile has changed since the
+    last run (cheap — no CASC parsing needed for this check alone).
+  - If unchanged, the whole sync is skipped ("nothing new could exist").
+  - This only applies to full, non-dry-run, all-creatures runs — --dry-run and
+    --creature <slug> always run regardless, for manual inspection/debugging.
 ```
 
 The padded silence is baked into every file at upload time so the Discord bot can stream directly from R2 without needing ffmpeg at playback.
@@ -35,8 +48,8 @@ The padded silence is baked into every file at upload time so the Discord bot ca
 | Tool | Purpose | Platform |
 |------|---------|----------|
 | Node.js 20+ | Runtime | All |
-| [SOX](https://sox.sourceforge.net/) | Audio silence padding | All — `winget install sox` or `brew install sox` |
-| Python + [faster-whisper](https://github.com/SYSTRAN/faster-whisper) | Transcription | Windows (GPU machine) — optional |
+| [sox_ng](https://codeberg.org/sox_ng/sox_ng) | Audio silence padding + format conversion | All — `winget install sox_ng.sox_ng` (Windows) or `brew install sox` (Mac). If the binary isn't on PATH, set `SOX_BIN` to its absolute path. |
+| Python + [faster-whisper](https://github.com/SYSTRAN/faster-whisper) | Local transcription | Requires an NVIDIA GPU + CUDA. On Windows also `pip install nvidia-cublas-cu12 nvidia-cudnn-cu12` — the driver alone isn't enough. |
 | World of Warcraft retail install | Sound source | Windows (or Mac for dev) |
 
 ---
@@ -66,17 +79,21 @@ R2_PUBLIC_URL=         # e.g. https://pub-<hash>.r2.dev or your custom domain
 ALGOLIA_APP_ID=
 ALGOLIA_ADMIN_API_KEY=
 
-# Anthropic (AI tag generation)
+# Anthropic (AI tag generation) — only required if SKIP_TAGGING=false
 ANTHROPIC_API_KEY=     # from platform.anthropic.com — separate from claude.ai subscription
 
 # Sound source
 SOURCE_MODE=wow-install
 WOW_INSTALL_PATH=C:\Program Files (x86)\World of Warcraft
 
-# Transcription (skip on first run, enable once faster-whisper is installed)
-SKIP_TRANSCRIPTION=true
+# Transcription
+SKIP_TRANSCRIPTION=false
 TRANSCRIPTION_PROVIDER=local
 TRANSCRIPTION_PYTHON_BIN=python
+
+# Tagging (mood tags + expansion/zone aliases via Claude) — off by default,
+# nice-to-have for search facets/filters but not required for a working search index
+SKIP_TAGGING=true
 ```
 
 **R2 token note:** The Access Key ID and Secret Access Key must come from
@@ -94,6 +111,8 @@ node dist/index.js --dry-run --run-once --creature murloc
 This reads from WoW, pads audio locally, and logs what it *would* upload — without touching R2 or Algolia.
 
 ### 4. Full run for one creature
+
+Requires `ALGOLIA_APP_ID` and `ALGOLIA_ADMIN_API_KEY` to be filled in — this one actually writes to R2 and Algolia.
 
 ```
 node dist/index.js --run-once --creature murloc
@@ -159,20 +178,37 @@ Get-Content logs\uploader\uploader-$(Get-Date -Format 'yyyy-MM-dd').log -Wait
 
 ## Transcription (Windows, GPU)
 
-Transcription is disabled by default (`SKIP_TRANSCRIPTION=true`). To enable it:
+Transcription is enabled by default (`SKIP_TRANSCRIPTION=false`, `TRANSCRIPTION_PROVIDER=local`). To set it up:
 
 1. Install [faster-whisper](https://github.com/SYSTRAN/faster-whisper):
    ```
    pip install faster-whisper
    ```
-2. Set in `.env`:
-   ```env
-   SKIP_TRANSCRIPTION=false
-   TRANSCRIPTION_PROVIDER=local
-   TRANSCRIPTION_PYTHON_BIN=python
+2. On Windows, the NVIDIA driver alone isn't enough — `ctranslate2` (which faster-whisper uses) needs the cuBLAS/cuDNN runtime libraries too:
+   ```
+   pip install nvidia-cublas-cu12 nvidia-cudnn-cu12
+   ```
+   `whisper_transcribe.py` registers these packages' DLL directories with Windows automatically before importing `faster_whisper` — no manual PATH changes needed.
+3. Confirm it works:
+   ```
+   python python\whisper_transcribe.py --check
    ```
 
-The transcription service spawns a Python subprocess using `faster-whisper large-v3` on the CUDA device. The transcript feeds into AI tag generation and is stored on the Algolia record.
+The transcription service spawns a Python subprocess using `faster-whisper large-v3` on the CUDA device, one process per file. Set `TRANSCRIPTION_PROVIDER=openai` to use OpenAI's `whisper-1` instead (requires `OPENAI_API_KEY`, costs per file, no GPU needed).
+
+The transcript is stored on the Algolia record and feeds into AI tag generation, if enabled.
+
+---
+
+## Tagging (optional)
+
+Tagging is **disabled by default** (`SKIP_TAGGING=true`) — it adds mood tags (`funny`, `menacing`, `epic`, etc.) and expansion/zone aliases via Claude, which is nice for search facets/filters but isn't required for a working search index; transcript + creature/zone/expansion text is already searchable without it.
+
+To enable it, set in `.env`:
+```env
+SKIP_TAGGING=false
+ANTHROPIC_API_KEY=     # required only when SKIP_TAGGING=false
+```
 
 ---
 
@@ -183,3 +219,4 @@ The transcription service spawns a Python subprocess using `faster-whisper large
 | `--run-once` | Run one sync then exit (instead of staying alive for cron) |
 | `--dry-run` | Read and process locally, skip all R2/Algolia writes |
 | `--creature <slug>` | Limit to one creature directory, e.g. `--creature murloc` |
+| `--force` | Bypass the R2 diff and manifest-change check — reprocesses every discovered sound (transcribe, tag, re-index) even if already in R2. Doesn't re-upload files that already exist. |

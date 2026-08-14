@@ -1,5 +1,7 @@
 import fs from 'fs';
+import OpenAI from 'openai';
 import { TranscriptResult, TranscriptionService } from './TranscriptionService';
+import { convertToWav, cleanupConverted } from './audioConvert';
 
 export class OpenAIWhisperService implements TranscriptionService {
   private apiKey: string;
@@ -13,19 +15,22 @@ export class OpenAIWhisperService implements TranscriptionService {
   }
 
   async transcribe(audioPath: string): Promise<TranscriptResult> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { default: OpenAI } = await (eval('import("openai")') as Promise<any>);
     const client = new OpenAI({ apiKey: this.apiKey });
+    const wavPath = await convertToWav(audioPath);
 
-    const response = await client.audio.transcriptions.create({
-      file: fs.createReadStream(audioPath),
-      model: 'whisper-1',
-      response_format: 'verbose_json',
-    });
+    try {
+      const response = await client.audio.transcriptions.create({
+        file: fs.createReadStream(wavPath),
+        model: 'whisper-1',
+        response_format: 'verbose_json',
+      });
 
-    return {
-      text: response.text ?? '',
-      confidence: 1,
-    };
+      return {
+        text: response.text ?? '',
+        confidence: 1,
+      };
+    } finally {
+      cleanupConverted(wavPath);
+    }
   }
 }

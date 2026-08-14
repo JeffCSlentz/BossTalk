@@ -38,9 +38,8 @@ export class AlgoliaClient {
           'expansion',
           'expansionAliases',
           'tags',
-          'category',
         ],
-        attributesForFaceting: ['expansion', 'instanceType', 'category', 'tags'],
+        attributesForFaceting: ['expansion', 'instanceType', 'tags'],
         customRanking: ['desc(uploadedAt)'],
       },
     });
