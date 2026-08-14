@@ -11,7 +11,6 @@ export interface AlgoliaRecord extends Record<string, unknown> {
   zone: string;
   zoneAliases: string[];
   instanceType: string;
-  category: string;
   tags: string[];
   durationSeconds: number;
   enrichedAt: number;

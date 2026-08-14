@@ -6,7 +6,6 @@ export interface EnrichmentResult {
   tags: string[];
   expansionAliases: string[];
   zoneAliases: string[];
-  category: string;
 }
 
 export async function generateTags(opts: {
@@ -14,21 +13,18 @@ export async function generateTags(opts: {
   transcript: string;
   expansion: string;
   zone: string;
-  category: string;
 }): Promise<EnrichmentResult> {
   const prompt = `You are enriching a database of World of Warcraft creature sounds for a Discord bot.
 
 Creature: ${opts.creatureName}
 Expansion: ${opts.expansion}
 Zone: ${opts.zone}
-Category (from filename): ${opts.category}
 Transcript: ${opts.transcript || '(no speech detected)'}
 
 Return a JSON object with:
 - "tags": array of 2-5 lowercase vibe/mood tags. Choose from: funny, dark, menacing, iconic, sad, epic, goofy, creepy, wholesome, chaotic, threatening, mysterious
 - "expansionAliases": common player names/abbreviations for this expansion (e.g. "Vanilla", "TBC", "WotLK", "Cata", "MoP", "WoD", "Legion", "BfA", "SL", "DF", "TWW")
 - "zoneAliases": common player names/abbreviations for this zone (e.g. "ICC" for "Icecrown Citadel")
-- "category": corrected category if the filename heuristic seems wrong, otherwise keep "${opts.category}"
 
 Respond only with the JSON object, no markdown.`;
 

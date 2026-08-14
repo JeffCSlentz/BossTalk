@@ -12,6 +12,7 @@ import { loadListfile } from './listfileCache';
 import type { SoundSource, DiscoveredSound } from './SoundSource';
 
 const RETAIL_PRODUCT = 'wow';
+const BLTE_HEADER_SIZE = 0x1e;
 
 export class WoWInstallSource implements SoundSource {
   readonly name = 'wow-install';
@@ -50,8 +51,8 @@ export class WoWInstallSource implements SoundSource {
     if (!entry) throw new Error(`eKey not in local indexes: ${eKey}`);
     const dataPath = path.join(this.dataDir, 'data', `data.${entry.index.toString().padStart(3, '0')}`);
     const fd = fs.openSync(dataPath, 'r');
-    const buf = Buffer.alloc(entry.size - 0x1e);
-    fs.readSync(fd, buf, 0, buf.length, entry.offset + 0x1e);
+    const buf = Buffer.alloc(entry.size - BLTE_HEADER_SIZE);
+    fs.readSync(fd, buf, 0, buf.length, entry.offset + BLTE_HEADER_SIZE);
     fs.closeSync(fd);
     return buf;
   }
@@ -107,17 +108,41 @@ export class WoWInstallSource implements SoundSource {
     this.initialized = true;
   }
 
+  // Cheap check — only reads/fetches the listfile, no CASC init. Lets the
+  // caller skip the expensive extraction pipeline entirely when there's
+  // nothing new to find.
+  async hasNewManifest(): Promise<boolean> {
+    const { changed } = await loadListfile(this.cacheDir);
+    return changed;
+  }
+
   async listSounds(creatureFilter?: string): Promise<DiscoveredSound[]> {
     await this.init();
 
-    const listfile = await loadListfile(this.cacheDir);
+    const { entries: listfile } = await loadListfile(this.cacheDir);
     const sounds: DiscoveredSound[] = [];
 
+    let tooSmall = 0;
     for (const entry of listfile) {
       if (creatureFilter && !entry.fileKey.includes(`/${creatureFilter.toLowerCase()}/`)) continue;
       if (isBannedPath(entry.fileKey)) continue;
-      if (!this.fileDataID2CKey.has(entry.fileDataID)) continue;
+
+      const cKey = this.fileDataID2CKey.get(entry.fileDataID);
+      if (!cKey) continue;
+      const eKey = this.cKey2EKey.get(cKey);
+      if (!eKey) continue;
+      const idxEntry = this.localIndexes.get(eKey.slice(0, 18));
+      if (!idxEntry) continue;
+      if (idxEntry.size - BLTE_HEADER_SIZE < MIN_FILE_SIZE_BYTES) {
+        tooSmall++;
+        continue;
+      }
+
       sounds.push({ fileKey: entry.fileKey, _fileDataID: entry.fileDataID } as DiscoveredSound & { _fileDataID: number });
+    }
+
+    if (tooSmall > 0) {
+      logger.info(`[casc] Skipped ${tooSmall} sounds under ${MIN_FILE_SIZE_BYTES} bytes (no useful audio)`);
     }
 
     logger.info(`[casc] ${sounds.length} extractable sounds found (filtered from ${listfile.length} listfile entries)`);
@@ -136,10 +161,6 @@ export class WoWInstallSource implements SoundSource {
 
     const rawData = this.readDataFile(eKey);
     const decoded = decodeBLTE(rawData, eKey);
-
-    if (decoded.length < MIN_FILE_SIZE_BYTES) {
-      throw new Error(`Decoded file too small (${decoded.length} bytes): ${sound.fileKey}`);
-    }
 
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
     fs.writeFileSync(destPath, decoded);
