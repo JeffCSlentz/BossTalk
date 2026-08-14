@@ -1,6 +1,8 @@
 # BossTalk Uploader
 
-Reads sound files directly from a local World of Warcraft installation, pads them with silence, uploads them to Cloudflare R2, transcribes them with Whisper, and indexes them to Algolia with AI-generated tags.
+Reads sound files directly from a local World of Warcraft installation, pads them with silence, uploads them to Cloudflare R2, transcribes them with Whisper, and indexes a minimal record to Algolia.
+
+This is the **audio + transcription upload** step only. Enrichment (mood tags, expansion/zone aliases, creature images) is intentionally out of scope here — it'll be a separate pipeline that runs later over already-uploaded records, not built yet.
 
 ---
 
@@ -16,9 +18,8 @@ For each new sound (not yet in R2):
   1. Pad audio     — sox adds 0.1s silence at start, 0.8s at end
   2. Upload        — padded .ogg → Cloudflare R2
   3. Transcribe    — faster-whisper (local GPU) or OpenAI whisper-1
-  4. Creature image — fetched from WoWHead
-  5. AI tags       — Claude generates tags, expansion/zone aliases (optional, see SKIP_TAGGING)
-  6. Index         — Algolia record upserted
+  4. Index         — minimal Algolia record upserted (objectID, r2Url,
+                      creatureName, creatureSlug, transcript, uploadedAt)
 
 Filtering (both applied at discovery time, before any upload/transcribe work):
   - Generic combat SFX with no spoken line (filenames containing "attack", "wound",
@@ -79,9 +80,6 @@ R2_PUBLIC_URL=         # e.g. https://pub-<hash>.r2.dev or your custom domain
 ALGOLIA_APP_ID=
 ALGOLIA_ADMIN_API_KEY=
 
-# Anthropic (AI tag generation) — only required if SKIP_TAGGING=false
-ANTHROPIC_API_KEY=     # from platform.anthropic.com — separate from claude.ai subscription
-
 # Sound source
 SOURCE_MODE=wow-install
 WOW_INSTALL_PATH=C:\Program Files (x86)\World of Warcraft
@@ -90,10 +88,6 @@ WOW_INSTALL_PATH=C:\Program Files (x86)\World of Warcraft
 SKIP_TRANSCRIPTION=false
 TRANSCRIPTION_PROVIDER=local
 TRANSCRIPTION_PYTHON_BIN=python
-
-# Tagging (mood tags + expansion/zone aliases via Claude) — off by default,
-# nice-to-have for search facets/filters but not required for a working search index
-SKIP_TAGGING=true
 ```
 
 **R2 token note:** The Access Key ID and Secret Access Key must come from
@@ -196,19 +190,7 @@ Transcription is enabled by default (`SKIP_TRANSCRIPTION=false`, `TRANSCRIPTION_
 
 The transcription service spawns a Python subprocess using `faster-whisper large-v3` on the CUDA device, one process per file. Set `TRANSCRIPTION_PROVIDER=openai` to use OpenAI's `whisper-1` instead (requires `OPENAI_API_KEY`, costs per file, no GPU needed).
 
-The transcript is stored on the Algolia record and feeds into AI tag generation, if enabled.
-
----
-
-## Tagging (optional)
-
-Tagging is **disabled by default** (`SKIP_TAGGING=true`) — it adds mood tags (`funny`, `menacing`, `epic`, etc.) and expansion/zone aliases via Claude, which is nice for search facets/filters but isn't required for a working search index; transcript + creature/zone/expansion text is already searchable without it.
-
-To enable it, set in `.env`:
-```env
-SKIP_TAGGING=false
-ANTHROPIC_API_KEY=     # required only when SKIP_TAGGING=false
-```
+The transcript is stored on the Algolia record.
 
 ---
 
@@ -219,4 +201,4 @@ ANTHROPIC_API_KEY=     # required only when SKIP_TAGGING=false
 | `--run-once` | Run one sync then exit (instead of staying alive for cron) |
 | `--dry-run` | Read and process locally, skip all R2/Algolia writes |
 | `--creature <slug>` | Limit to one creature directory, e.g. `--creature murloc` |
-| `--force` | Bypass the R2 diff and manifest-change check — reprocesses every discovered sound (transcribe, tag, re-index) even if already in R2. Doesn't re-upload files that already exist. |
+| `--force` | Bypass the R2 diff and manifest-change check — reprocesses every discovered sound (re-transcribe, re-index) even if already in R2. Doesn't re-upload files that already exist. |

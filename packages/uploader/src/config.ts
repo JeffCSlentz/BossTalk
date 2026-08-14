@@ -17,7 +17,6 @@ function optional_env(key: string, fallback = ''): string {
 export function loadConfig(opts: { dryRun?: boolean } = {}): RunnerConfig & { cron: string } {
   // In dry-run mode external service credentials are not needed
   const req = opts.dryRun ? optional_env : require_env;
-  const skipTagging = optional_env('SKIP_TAGGING', 'false') === 'true';
 
   return {
     r2: {
@@ -29,8 +28,6 @@ export function loadConfig(opts: { dryRun?: boolean } = {}): RunnerConfig & { cr
     },
     algoliaAppId: req('ALGOLIA_APP_ID'),
     algoliaApiKey: req('ALGOLIA_ADMIN_API_KEY'),
-    // Only needed for AI tag generation — skip the requirement entirely when that's disabled.
-    anthropicApiKey: skipTagging ? optional_env('ANTHROPIC_API_KEY') : req('ANTHROPIC_API_KEY'),
     transcriptionProvider: (optional_env('TRANSCRIPTION_PROVIDER', 'local') as 'local' | 'openai' | 'assemblyai'),
     transcriptionPythonBin: optional_env('TRANSCRIPTION_PYTHON_BIN', 'python'),
     openAIApiKey: optional_env('OPENAI_API_KEY'),
@@ -40,7 +37,6 @@ export function loadConfig(opts: { dryRun?: boolean } = {}): RunnerConfig & { cr
     wowCacheDir: optional_env('WOW_CACHE_DIR'),
     soundsRootPath: optional_env('SOUNDS_ROOT_PATH'),
     skipTranscription: optional_env('SKIP_TRANSCRIPTION', 'false') === 'true',
-    skipTagging,
     cron: optional_env('SCHEDULER_CRON', '0 3 * * *'),
   };
 }

@@ -4,8 +4,6 @@ import { AlgoliaRecord, objectIDFromFileKey } from '@bosstalk/shared';
 import { TranscriptionService } from '../transcription/TranscriptionService';
 import { AlgoliaClient } from '../algoliaClient';
 import { R2Client } from '../r2Client';
-import { generateTags } from './tagGenerator';
-import { fetchCreatureImage } from './creatureImage';
 import { padAudio, cleanupPadded } from './padAudio';
 import logger, { formatError } from '../logger';
 
@@ -27,7 +25,6 @@ export interface PipelineConfig {
   algolia?: AlgoliaClient;
   r2?: R2Client;
   skipTranscription?: boolean;
-  skipTagging?: boolean;
   dryRun?: boolean;
 }
 
@@ -35,8 +32,6 @@ export interface PipelineResult {
   fileKey: string;
   record: AlgoliaRecord;
   uploaded: boolean;
-  enriched: boolean;
-  error?: string;
 }
 
 export async function processFile(
@@ -50,20 +45,11 @@ export async function processFile(
 
   const record: AlgoliaRecord = {
     objectID: objectIDFromFileKey(fileKey),
-    fileKey,
     r2Url: config.r2?.publicUrl(fileKey) ?? `https://cdn.bosstalk.io/${fileKey}`,
     creatureName,
     creatureSlug,
-    creatureImageUrl: '',
     transcript: '',
-    expansion: '',
-    expansionAliases: [],
-    zone: '',
-    zoneAliases: [],
-    instanceType: '',
-    tags: [],
     durationSeconds: 0,
-    enrichedAt: 0,
     uploadedAt: now,
   };
 
@@ -89,7 +75,6 @@ export async function processFile(
   }
 
   // 2. Transcribe (runs against original unpadded file)
-  let enriched = false;
   if (!config.skipTranscription && !config.dryRun) {
     try {
       const result = await config.transcription.transcribe(localPath);
@@ -106,38 +91,7 @@ export async function processFile(
     logger.info(`${fileKey} → "${record.transcript || '(no speech detected)'}"`);
   }
 
-  // 3. Creature image
-  if (!config.dryRun) {
-    try {
-      const img = await fetchCreatureImage(creatureSlug);
-      record.creatureImageUrl = img.imageUrl;
-      logger.debug(`${fileKey} → creature image found`);
-    } catch (err) {
-      logger.debug(`${fileKey} → no creature image found: ${formatError(err)}`);
-    }
-  }
-
-  // 4. AI tag generation
-  if (!config.dryRun && !config.skipTagging) {
-    try {
-      const enrichment = await generateTags({
-        creatureName,
-        transcript: record.transcript,
-        expansion: record.expansion,
-        zone: record.zone,
-      });
-      record.tags = enrichment.tags;
-      record.expansionAliases = enrichment.expansionAliases;
-      record.zoneAliases = enrichment.zoneAliases;
-      record.enrichedAt = Math.floor(Date.now() / 1000);
-      enriched = true;
-      logger.debug(`${fileKey} → tags: [${enrichment.tags.join(', ')}]`);
-    } catch (err) {
-      logger.debug(`${fileKey} → tag generation failed: ${formatError(err)}`);
-    }
-  }
-
-  // 5. Index to Algolia
+  // 3. Index to Algolia
   if (config.dryRun) {
     logger.info(`[dry-run] Would index: ${record.objectID}`);
   } else {
@@ -145,7 +99,7 @@ export async function processFile(
     logger.debug(`${fileKey} → indexed to Algolia`);
   }
 
-  return { fileKey, record, uploaded, enriched };
+  return { fileKey, record, uploaded };
 }
 
 function slugToDisplayName(slug: string): string {
