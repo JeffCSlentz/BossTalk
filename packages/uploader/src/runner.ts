@@ -20,7 +20,6 @@ export interface RunnerConfig {
   r2: R2Config;
   algoliaAppId: string;
   algoliaApiKey: string;
-  anthropicApiKey: string;
   transcriptionProvider: 'local' | 'openai' | 'assemblyai';
   transcriptionPythonBin?: string;
   openAIApiKey?: string;
@@ -30,7 +29,6 @@ export interface RunnerConfig {
   wowCacheDir?: string;
   soundsRootPath?: string;
   skipTranscription?: boolean;
-  skipTagging?: boolean;
   dryRun?: boolean;
   creatureFilter?: string;
   // Bypass the R2 diff and manifest-change check entirely — reprocesses every
@@ -125,11 +123,23 @@ export async function runSync(config: RunnerConfig): Promise<void> {
       return;
     }
 
+    const creatureSlugOf = (fileKey: string) => fileKey.split('/').at(-2) ?? '';
+    const totalCreatures = new Set(sounds.map((s) => creatureSlugOf(s.fileKey))).size;
+    logger.info(`${sounds.length} sounds across ${totalCreatures} creatures to process`);
+
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bosstalk-'));
     let processed = 0;
     let errors = 0;
+    const seenCreatures = new Set<string>();
 
     for (const sound of sounds) {
+      const creatureSlug = creatureSlugOf(sound.fileKey);
+      if (!seenCreatures.has(creatureSlug)) {
+        seenCreatures.add(creatureSlug);
+        const pct = ((seenCreatures.size / totalCreatures) * 100).toFixed(1);
+        logger.info(`→ ${creatureSlug} (creature ${seenCreatures.size}/${totalCreatures}, ${pct}%)`);
+      }
+
       const tmpFile = path.join(tmpDir, path.basename(sound.fileKey));
       try {
         // For filesystem source, localPath is already set. For remote, we extract first.
@@ -143,7 +153,6 @@ export async function runSync(config: RunnerConfig): Promise<void> {
           algolia,
           r2,
           skipTranscription: config.skipTranscription,
-          skipTagging: config.skipTagging,
           dryRun: config.dryRun,
         });
 

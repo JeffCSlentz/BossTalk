@@ -30,16 +30,7 @@ export class AlgoliaClient {
     await this.client.setSettings({
       indexName: INDEX_NAME,
       indexSettings: {
-        searchableAttributes: [
-          'creatureName',
-          'transcript',
-          'zone',
-          'zoneAliases',
-          'expansion',
-          'expansionAliases',
-          'tags',
-        ],
-        attributesForFaceting: ['expansion', 'instanceType', 'tags'],
+        searchableAttributes: ['creatureName', 'transcript'],
         customRanking: ['desc(uploadedAt)'],
       },
     });
