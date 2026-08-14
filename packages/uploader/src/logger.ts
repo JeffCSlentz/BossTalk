@@ -1,3 +1,4 @@
+import './loadEnv';
 import path from 'path';
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';

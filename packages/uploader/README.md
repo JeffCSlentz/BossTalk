@@ -18,8 +18,13 @@ For each new sound (not yet in R2):
   1. Pad audio     — sox adds 0.1s silence at start, 0.8s at end
   2. Upload        — padded .ogg → Cloudflare R2
   3. Transcribe    — faster-whisper (local GPU) or OpenAI whisper-1
-  4. Index         — minimal Algolia record upserted (objectID, r2Url,
-                      creatureName, creatureSlug, transcript, uploadedAt)
+  4. Index         — queued as a partial update (objectID, r2Url, creatureName,
+                      creatureSlug, transcript, uploadedAt); only these fields
+                      are touched, so a later enrichment pass's writes (or vice
+                      versa) can't clobber each other. Batched in groups of
+                      1000 rather than one write per file — flushed at the end
+                      of a run, and immediately on Ctrl+C/interrupt so nothing
+                      already-processed gets stranded unsent.
 
 Filtering (both applied at discovery time, before any upload/transcribe work):
   - Generic combat SFX with no spoken line (filenames containing "attack", "wound",
