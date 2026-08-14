@@ -31,8 +31,13 @@ export interface RunnerConfig {
   skipTranscription?: boolean;
   dryRun?: boolean;
   creatureFilter?: string;
-  // Bypass the R2 diff and manifest-change check entirely — reprocesses every
-  // discovered sound (matching creatureFilter, if set) even if already in R2.
+  // Bypass the manifest-change short-circuit — run the manifest check (or skip
+  // it, same as --creature) regardless of whether the listfile hash matches.
+  forceManifest?: boolean;
+  // Bypass the R2 diff — reprocesses every discovered sound (matching
+  // creatureFilter, if set) even if already in R2. Doesn't force past the
+  // manifest short-circuit on its own — combine with forceManifest (or
+  // creatureFilter, which already skips it) for a full unscoped reprocess.
   forceReindex?: boolean;
 }
 
@@ -89,14 +94,18 @@ export async function runSync(config: RunnerConfig): Promise<void> {
     // listfile has actually changed since the last run — no new sounds can exist
     // otherwise. Skip this for dry runs and single-creature debug runs, where the
     // intent is to inspect current state regardless of what changed.
-    if (!config.dryRun && !config.creatureFilter && !config.forceReindex && source instanceof WoWInstallSource) {
-      const manifestChanged = await source.hasNewManifest();
-      if (!manifestChanged) {
-        logger.info('No new community manifest detected — nothing to do.');
-        recordSyncHistory('no changes');
-        return;
+    if (!config.dryRun && !config.creatureFilter) {
+      if (config.forceManifest) {
+        logger.info('--force-manifest — skipping the manifest-change check.');
+      } else if (source instanceof WoWInstallSource) {
+        const manifestChanged = await source.hasNewManifest();
+        if (!manifestChanged) {
+          logger.info('No new community manifest detected — nothing to do.');
+          recordSyncHistory('no changes');
+          return;
+        }
+        logger.info('New community manifest detected — running full sync.');
       }
-      logger.info('New community manifest detected — running full sync.');
     }
 
     let sounds: import('./casc/SoundSource').DiscoveredSound[];
@@ -107,7 +116,7 @@ export async function runSync(config: RunnerConfig): Promise<void> {
       logger.info(`Discovered ${sounds.length} sounds (dry run — skipping R2 comparison)`);
     } else if (config.forceReindex) {
       sounds = await source.listSounds(config.creatureFilter);
-      logger.info(`Discovered ${sounds.length} sounds (--force — reprocessing all, ignoring R2 diff)`);
+      logger.info(`Discovered ${sounds.length} sounds (--force-reindex — reprocessing all, ignoring R2 diff)`);
     } else {
       const diff = await detectNew(source, r2!, config.creatureFilter);
       sounds = diff.newSounds;

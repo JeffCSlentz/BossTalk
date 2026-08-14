@@ -106,6 +106,9 @@ export class BLTEDecoder {
 
 export function decodeBLTE(buffer: Buffer, eKey: string, keys?: Map<string, Uint8Array>): Buffer {
   const reader = new BLTEDecoder(buffer, eKey, keys);
-  reader.decode();
+  const fullyDecoded = reader.decode();
+  if (!fullyDecoded) {
+    throw new Error(`[BLTE] ${eKey} could not be fully decoded — missing decryption key for one or more blocks`);
+  }
   return reader.buffer;
 }

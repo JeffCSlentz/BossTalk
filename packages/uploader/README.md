@@ -36,8 +36,8 @@ Manifest-change short-circuit (SOURCE_MODE=wow-install only):
   - Every run first checks whether the community listfile has changed since the
     last run (cheap — no CASC parsing needed for this check alone).
   - If unchanged, the whole sync is skipped ("nothing new could exist").
-  - This only applies to full, non-dry-run, all-creatures runs — --dry-run and
-    --creature <slug> always run regardless, for manual inspection/debugging.
+  - This only applies to full, non-dry-run, all-creatures runs — --dry-run,
+    --creature <slug>, and --force-manifest always run regardless.
 ```
 
 The padded silence is baked into every file at upload time so the Discord bot can stream directly from R2 without needing ffmpeg at playback.
@@ -201,4 +201,5 @@ The transcript is stored on the Algolia record.
 | `--run-once` | Run one sync then exit (instead of staying alive for cron) |
 | `--dry-run` | Read and process locally, skip all R2/Algolia writes |
 | `--creature <slug>` | Limit to one creature directory, e.g. `--creature murloc` |
-| `--force` | Bypass the R2 diff and manifest-change check — reprocesses every discovered sound (re-transcribe, re-index) even if already in R2. Doesn't re-upload files that already exist. |
+| `--force-manifest` | Bypass the manifest-change short-circuit — run the discovery/diff step even if the community listfile hasn't changed since last run. On its own, still only processes sounds not already in R2. |
+| `--force-reindex` | Bypass the R2 diff — reprocesses every discovered sound (re-transcribe, re-index) even if already in R2. Doesn't re-upload files that already exist. On its own (no `--creature`), the manifest short-circuit can still skip the run entirely if nothing changed — combine with `--force-manifest` for a full unscoped reprocess. |
