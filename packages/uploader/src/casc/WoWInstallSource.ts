@@ -2,13 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { isBannedPath, MIN_FILE_SIZE_BYTES } from '@bosstalk/shared';
-import logger from '../logger';
+import logger, { formatError } from '../logger';
 import { parseBuildInfo, parseBuildConfig } from './parseConfig';
 import { parseIdx, IdxEntry } from './parseIdx';
 import { parseEncoding } from './parseEncoding';
 import { parseRoot } from './parseRoot';
 import { decodeBLTE } from './BLTEDecoder';
 import { loadListfile } from './listfileCache';
+import { loadTactKeys } from './tactKeys';
 import type { SoundSource, DiscoveredSound } from './SoundSource';
 
 const RETAIL_PRODUCT = 'wow';
@@ -23,6 +24,7 @@ export class WoWInstallSource implements SoundSource {
   private localIndexes = new Map<string, IdxEntry>();
   private cKey2EKey = new Map<string, string>();
   private fileDataID2CKey = new Map<number, string>();
+  private decryptionKeys = new Map<string, Uint8Array>();
   private initialized = false;
 
   constructor(installDir: string, cacheDir?: string) {
@@ -80,8 +82,14 @@ export class WoWInstallSource implements SoundSource {
     if (!build) throw new Error(`No '${RETAIL_PRODUCT}' product found in .build.info`);
     logger.info(`[casc] Build: ${build['Version']} (${build['Build Key']?.slice(0, 8)}...)`);
 
-    // 2. Load local archive indexes
+    // 2. Load local archive indexes (in parallel with the decryption key
+    // list — independent network/disk work)
+    const keysPromise = loadTactKeys(this.cacheDir).catch((err) => {
+      logger.warn(`[tactkeys] Failed to load decryption keys, encrypted sounds will be skipped: ${formatError(err)}`);
+      return new Map<string, Uint8Array>();
+    });
     await this.loadIndexes();
+    this.decryptionKeys = await keysPromise;
 
     // 3. Read build config → get encoding key
     const buildConfig = parseBuildConfig(this.readConfigFile(build['Build Key']));
@@ -160,7 +168,7 @@ export class WoWInstallSource implements SoundSource {
     if (!eKey) throw new Error(`No eKey for cKey ${cKey} (${sound.fileKey})`);
 
     const rawData = this.readDataFile(eKey);
-    const decoded = decodeBLTE(rawData, eKey);
+    const decoded = decodeBLTE(rawData, eKey, this.decryptionKeys);
 
     fs.mkdirSync(path.dirname(destPath), { recursive: true });
     fs.writeFileSync(destPath, decoded);

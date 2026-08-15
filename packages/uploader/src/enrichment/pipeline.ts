@@ -11,7 +11,17 @@ import logger, { formatError } from '../logger';
 // roars, growls — instead of returning an empty transcript. Filter them out so
 // they don't get indexed as if they were real dialogue.
 const HALLUCINATION_EXACT = ['thanks for watching!', 'thanks for watching', 'thank you for watching!', 'thank you for watching'];
-const HALLUCINATION_SUBSTRINGS = ['translation by', 'transcription by', 'subscribe'];
+const HALLUCINATION_SUBSTRINGS = [
+  'translation by',
+  'translated by',
+  'transcription by',
+  'transcribed by',
+  'subscribe',
+  'subtitles by',
+  'captioning provided by',
+  'amara.org',
+  'resemblance to actual persons',
+];
 
 function isHallucinatedTranscript(text: string): boolean {
   const normalized = text.trim().toLowerCase();
