@@ -13,6 +13,13 @@ WoW install (CASC)
   └─ Read local .idx archive indexes
   └─ Parse root manifest → fileDataID → content key map
   └─ Decode BLTE-compressed .ogg from data files
+  └─ Some assets are BLTE-encrypted (Blizzard withholds the key until the
+     tied content ships, to stop early datamining). Decryption keys are
+     pulled from the community-maintained wowdev/TACTKeys list and cached
+     locally (WOW_CACHE_DIR/tact-keys.txt, refreshed daily). Files whose key
+     isn't published yet fail cleanly and are retried automatically once
+     it's added — nothing partial ever reaches R2, so there's no separate
+     recovery step needed.
 
 For each new sound (not yet in R2):
   1. Pad audio     — sox adds 0.1s silence at start, 0.8s at end
