@@ -64,6 +64,7 @@ export async function processFile(
     transcript: '',
     durationSeconds: 0,
     uploadedAt: now,
+    _rand: Math.random(),
   };
 
   // 1. Pad audio with silence (0.1s start, 0.8s end) then upload to R2

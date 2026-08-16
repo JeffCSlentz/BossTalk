@@ -5,6 +5,11 @@ packages/uploader/cache/
 packages/uploader/.env
 packages/shared/dist/
 packages/uploader/dist/
+packages/bot/dist/
+packages/bot/.env
+packages/bot/data/guildTags.json
+packages/bot/data/statsData.json
+packages/bot/data/guildTags.migrated.json
 
 # Sound files — these are no longer tracked in git.
 # Point SOUNDS_ROOT_PATH in packages/uploader/.env to your external working directory.

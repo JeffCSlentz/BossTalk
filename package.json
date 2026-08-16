@@ -9,20 +9,10 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace=packages/bot",
-    "bot:dev-win": "set NODE_ENV=dev && node index.js",
-    "bot:prod-win": "set NODE_ENV=prod && node index.js",
-    "bot:dev-linux": "export NODE_ENV=dev && node index.js",
-    "bot:prod-linux": "export NODE_ENV=prod && node index.js",
-    "bot:deploy-commands-linux": "export NODE_ENV=prod && node src/deploy_commands.js",
-    "bot:deploy-commands-windows": "set NODE_ENV=prod && node src/deploy_commands.js"
+    "build": "npm run build --workspaces --if-present",
+    "deploy-commands": "npm run deploy-commands --workspace=packages/bot"
   },
-  "dependencies": {
-    "@discordjs/opus": "^0.10.0",
-    "@discordjs/voice": "^0.16.0",
-    "discord.js": "^14.9.0",
-    "ffmpeg-static": "^5.2.0",
-    "fuse.js": "^6.6.2",
-    "tweetnacl": "^1.0.3",
-    "winston": "^3.8.2"
+  "allowScripts": {
+    "ffmpeg-static@5.3.0": true
   }
 }
