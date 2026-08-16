@@ -41,6 +41,21 @@ export class AlgoliaClient {
     });
   }
 
+  // Full set of every objectID currently indexed — used by diffDetector to
+  // check Algolia presence alongside R2 presence without a live API call per
+  // file. Only pulls objectID, not full records, to keep it cheap.
+  async fetchAllObjectIDs(): Promise<Set<string>> {
+    const ids = new Set<string>();
+    await this.client.browseObjects<{ objectID: string }>({
+      indexName: INDEX_NAME,
+      browseParams: { attributesToRetrieve: ['objectID'] },
+      aggregator: (response) => {
+        for (const hit of response.hits) ids.add(hit.objectID);
+      },
+    });
+    return ids;
+  }
+
   async delete(objectID: string): Promise<void> {
     await this.client.deleteObject({ indexName: INDEX_NAME, objectID });
   }

@@ -11,6 +11,7 @@ import { FilesystemSource } from './casc/FilesystemSource';
 import { CASCRemoteSource } from './casc/CASCRemoteSource';
 import { WoWInstallSource } from './casc/WoWInstallSource';
 import { detectNew } from './diffDetector';
+import { MissingDecryptionKeyError } from './casc/BLTEDecoder';
 import { processFile } from './enrichment/pipeline';
 import { recordSyncHistory } from './syncHistory';
 import type { TranscriptionService } from './transcription/TranscriptionService';
@@ -130,11 +131,11 @@ export async function runSync(config: RunnerConfig): Promise<void> {
       sounds = await source.listSounds(config.creatureFilter);
       logger.info(`Discovered ${sounds.length} sounds (--force-reindex — reprocessing all, ignoring R2 diff)`);
     } else {
-      const diff = await detectNew(source, r2!, config.creatureFilter);
+      const diff = await detectNew(source, r2!, algolia!, config.creatureFilter);
       sounds = diff.newSounds;
       totalInR2 = diff.totalInR2;
       logger.info(
-        `Discovered ${diff.totalDiscovered} sounds, ${diff.totalInR2} already in R2, ${diff.newSounds.length} new`
+        `Discovered ${diff.totalDiscovered} sounds, ${diff.totalInR2} in R2, ${diff.totalInAlgolia} in Algolia, ${diff.newSounds.length} new/incomplete`
       );
     }
 
@@ -151,6 +152,7 @@ export async function runSync(config: RunnerConfig): Promise<void> {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'bosstalk-'));
     let processed = 0;
     let errors = 0;
+    let skippedNoKey = 0;
     const seenCreatures = new Set<string>();
 
     for (const sound of sounds) {
@@ -187,15 +189,23 @@ export async function runSync(config: RunnerConfig): Promise<void> {
           logger.info(`${processed}/${sounds.length} processed`);
         }
       } catch (err) {
-        logger.error(`Failed ${sound.fileKey}: ${formatError(err)}`);
-        errors++;
+        if (err instanceof MissingDecryptionKeyError) {
+          // Expected/routine — Blizzard withholds the key until the tied
+          // content ships. Not worth a full stack trace; it'll retry
+          // automatically once the community key list catches up.
+          logger.info(`Skipped ${sound.fileKey} — no decryption key published yet`);
+          skippedNoKey++;
+        } else {
+          logger.error(`Failed ${sound.fileKey}: ${formatError(err)}`);
+          errors++;
+        }
       } finally {
         if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
       }
     }
 
     fs.rmdirSync(tmpDir);
-    logger.info(`Sync complete — processed: ${processed}, errors: ${errors}`);
+    logger.info(`Sync complete — processed: ${processed}, skipped (no key): ${skippedNoKey}, errors: ${errors}`);
 
     if (!config.dryRun) {
       const prefix = config.forceReindex
@@ -203,9 +213,10 @@ export async function runSync(config: RunnerConfig): Promise<void> {
         : source instanceof WoWInstallSource
           ? 'new listfile, '
           : '';
+      const noKeySuffix = skippedNoKey > 0 ? `, ${skippedNoKey} skipped (no key)` : '';
       const errSuffix = errors > 0 ? `, ${errors} error${errors === 1 ? '' : 's'}` : '';
       const noun = config.forceReindex ? 'sound' : 'new sound';
-      recordSyncHistory(`${prefix}${processed} ${noun}${processed === 1 ? '' : 's'} processed${errSuffix}`);
+      recordSyncHistory(`${prefix}${processed} ${noun}${processed === 1 ? '' : 's'} processed${noKeySuffix}${errSuffix}`);
     }
   } finally {
     process.off('SIGINT', shutdown);
