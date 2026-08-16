@@ -8,6 +8,11 @@ const BLTE_MAGIC = 0x424c5445;
 const ENC_TYPE_SALSA20 = 0x53;
 const EMPTY_HASH = '0'.repeat(32);
 
+// Distinct from other decode failures — expected/routine (Blizzard withholds
+// the key until the tied content ships), not a bug. Callers can catch this
+// specifically to log it as a quiet skip instead of a noisy error.
+export class MissingDecryptionKeyError extends Error {}
+
 interface Block { compressedSize: number; decompressedSize: number; hash: string; }
 
 export class BLTEDecoder {
@@ -108,7 +113,7 @@ export function decodeBLTE(buffer: Buffer, eKey: string, keys?: Map<string, Uint
   const reader = new BLTEDecoder(buffer, eKey, keys);
   const fullyDecoded = reader.decode();
   if (!fullyDecoded) {
-    throw new Error(`[BLTE] ${eKey} could not be fully decoded — missing decryption key for one or more blocks`);
+    throw new MissingDecryptionKeyError(`[BLTE] ${eKey} could not be fully decoded — missing decryption key for one or more blocks`);
   }
   return reader.buffer;
 }

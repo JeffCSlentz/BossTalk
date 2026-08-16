@@ -18,9 +18,12 @@ const HALLUCINATION_SUBSTRINGS = [
   'transcribed by',
   'subscribe',
   'subtitles by',
+  'captioning by',
   'captioning provided by',
   'amara.org',
-  'resemblance to actual persons',
+  'living or dead, is coincidental',
+  "we'll be right back",
+  'welcome back to my channel',
 ];
 
 function isHallucinatedTranscript(text: string): boolean {

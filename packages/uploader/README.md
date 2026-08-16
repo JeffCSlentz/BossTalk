@@ -40,9 +40,12 @@ Filtering (both applied at discovery time, before any upload/transcribe work):
     useful audio — see MIN_FILE_SIZE_BYTES in @bosstalk/shared.
 
 Diff detection:
-  - Lists R2 objects under sounds/creature/
+  - Lists R2 objects under sounds/creature/, and every objectID in Algolia
   - Compares against what's in the WoW install
-  - Only processes files not already in R2
+  - Only skips a file if it's fully done — present in *both* R2 and Algolia.
+    A file that made it into R2 but not Algolia (e.g. a prior run got
+    interrupted between the two writes) is treated as incomplete and retried,
+    instead of being silently stuck forever.
 
 Manifest-change short-circuit (SOURCE_MODE=wow-install only):
   - Every run first checks whether the community listfile has changed since the
