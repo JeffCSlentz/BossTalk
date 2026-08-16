@@ -10,6 +10,9 @@ export interface AlgoliaRecord extends Record<string, unknown> {
   transcript: string;
   durationSeconds: number;
   uploadedAt: number;
+  // Random selection has no native Algolia query — the bot filters
+  // `_rand >= <threshold>` instead of holding a local copy of the catalog.
+  _rand: number;
 }
 
 export function objectIDFromFileKey(fileKey: string): string {

@@ -1,0 +1,39 @@
+{
+  "name": "@bosstalk/bot",
+  "version": "1.0.0",
+  "description": "BossTalk Discord bot — thin client over R2 + Algolia",
+  "private": true,
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "typecheck": "tsc --build --noEmit",
+    "deploy-commands": "ts-node src/deploy-commands.ts",
+    "migrate-guild-tags": "ts-node scripts/migrateGuildTags.ts",
+    "find-pictures": "ts-node scripts/findPictures.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@bosstalk/shared": "*",
+    "@discordjs/builders": "^1.14.1",
+    "@discordjs/rest": "^2.6.3",
+    "@discordjs/voice": "^0.19.2",
+    "algoliasearch": "^5.0.0",
+    "discord-api-types": "^0.37.100",
+    "discord.js": "^14.27.0",
+    "dotenv": "^16.4.0",
+    "ffmpeg-static": "^5.2.0",
+    "puppeteer": "^23.0.0",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}

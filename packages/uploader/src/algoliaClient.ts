@@ -66,6 +66,15 @@ export class AlgoliaClient {
       indexSettings: {
         searchableAttributes: ['creatureName', 'transcript'],
         customRanking: ['desc(uploadedAt)'],
+        // Lets the bot dedupe autocomplete results to one hit per creature
+        // via a real (ranked, typo-tolerant) search instead of searchForFacetValues.
+        attributeForDistinct: 'creatureSlug',
+        distinct: true,
+        // creatureSlug: live-filtered "other sounds from this creature" lookups.
+        // _rand: Algolia has no native random-record query; the bot picks a
+        // random threshold and filters `_rand >= threshold` (wrapping around
+        // on empty results) instead of holding a local copy of the catalog.
+        attributesForFaceting: ['creatureSlug', '_rand'],
       },
     });
   }
