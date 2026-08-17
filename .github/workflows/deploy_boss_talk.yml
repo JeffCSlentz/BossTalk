@@ -18,5 +18,5 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy
-        shell: pwsh
+        shell: powershell
         run: ./deploy.ps1
