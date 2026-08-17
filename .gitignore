@@ -1,4 +1,20 @@
 node_modules/
+packages/uploader/cache/
+.DS_Store
+.env
+packages/uploader/.env
+packages/shared/dist/
+packages/uploader/dist/
+packages/bot/dist/
+packages/bot/.env
+packages/bot/data/guildTags.json
+packages/bot/data/statsData.json
+packages/bot/data/guildTags.migrated.json
+
+# Sound files — these are no longer tracked in git.
+# Point SOUNDS_ROOT_PATH in packages/uploader/.env to your external working directory.
+# To fully remove from git history run: git rm -r --cached sounds/
+sounds/
 config.json
 config_prod.json
 backups/

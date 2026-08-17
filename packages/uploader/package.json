@@ -1,0 +1,33 @@
+{
+  "name": "@bosstalk/uploader",
+  "version": "1.0.0",
+  "description": "Sound Uploader — reads WoW sound files, uploads to R2, enriches and indexes to Algolia",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "start": "node dist/index.js",
+    "start:once": "node dist/index.js --run-once",
+    "dev": "ts-node src/index.ts",
+    "dev:once": "ts-node src/index.ts --run-once",
+    "typecheck": "tsc --build --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/lib-storage": "^3.600.0",
+    "@bosstalk/shared": "*",
+    "@rhyster/wow-casc-dbc": "^2.15.5",
+    "algoliasearch": "^5.0.0",
+    "dotenv": "^16.4.0",
+    "node-cron": "^3.0.3",
+    "openai": "^4.70.0",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/node-cron": "^3.0.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}

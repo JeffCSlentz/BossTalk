@@ -8,13 +8,15 @@ on:
 jobs:
   deploy:
     name: Deploy
-    runs-on: ubuntu-latest
+    # Runs on the self-hosted runner installed on the Windows machine that
+    # also hosts the bot — no SSH/remote host involved (see deploy.ps1 and
+    # RUNNING_BOSS_TALK.md for the one-time runner + NSSM service setup).
+    runs-on: self-hosted
 
     steps:
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.BOSS_TALK_VULTR_IP }}
-          username: ${{ secrets.BOSS_TALK_VULTR_NAME }}
-          password : ${{ secrets.BOSS_TALK_VULTR_PW }}
-          script: cd BossTalk && sh deploy.sh
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        shell: pwsh
+        run: ./deploy.ps1

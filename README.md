@@ -27,4 +27,4 @@ Currently has creatures from up to 11.2.5
   * Joins a voice channel. If left blank, will join the voice channel you're in.
   
 * `leave`
-  * Not yet implemented lmao.
+  * Leaves the voice channel.
