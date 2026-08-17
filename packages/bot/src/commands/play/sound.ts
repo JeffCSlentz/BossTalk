@@ -32,14 +32,18 @@ const command: BotCommand = {
     const connection = await ensureVoiceConnection(interaction);
     if (!connection) return interaction.reply(buildNotInVoiceChannelPayload());
 
-    const slug = interaction.options.getString('search');
-    const creature = await loadCreature(interaction, slug);
+    const objectID = interaction.options.getString('search');
+    const picked = await interaction.client.bot.catalog.getById(objectID);
+    if (!picked) return interaction.reply(buildErrorPayload('Creature not found'));
+    const creature = await loadCreature(interaction, picked.creatureSlug);
     if (!creature) return interaction.reply(buildErrorPayload('Creature not found'));
-    await playUrl(interaction.guildId, creature.sounds[0].r2Url);
-    interaction.client.bot.stats.playedSound(interaction.guildId, interaction.member.id, interaction.member.user.username, creature.sounds[0].objectID);
-    await interaction.reply(buildSoundPayload(creature, 0, tagCount(interaction)));
+    const soundIndex = Math.max(creature.sounds.findIndex((s) => s.objectID === objectID), 0);
+
+    await playUrl(interaction.guildId, creature.sounds[soundIndex].r2Url);
+    interaction.client.bot.stats.playedSound(interaction.guildId, interaction.member.id, interaction.member.user.username, creature.sounds[soundIndex].objectID);
+    await interaction.reply(buildSoundPayload(creature, soundIndex, tagCount(interaction)));
     const message = await interaction.fetchReply();
-    setMessageState(message.id, stateFor(creature, 0));
+    setMessageState(message.id, stateFor(creature, soundIndex));
   },
   async autocomplete(interaction) {
     const input = interaction.options.getFocused();
@@ -52,7 +56,7 @@ const command: BotCommand = {
         // to figure out which attribute the match actually came from.
         const snippet = transcriptSnippet(h.transcript, 6);
         const label = snippet ? `${h.creatureName} — "${snippet}"` : h.creatureName;
-        return { name: label.slice(0, 100), value: h.creatureSlug.slice(0, 100) };
+        return { name: label.slice(0, 100), value: h.objectID.slice(0, 100) };
       })
     );
   },
