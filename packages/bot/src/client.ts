@@ -2,13 +2,11 @@ import { Client, GatewayIntentBits } from 'discord.js';
 import { Catalog } from './services/catalog';
 import { GuildTags } from './services/guildTags';
 import { Stats } from './services/stats';
-import { PictureFinder } from './services/pictureFinder';
 
 export interface BotServices {
   catalog: Catalog;
   guildTags: GuildTags;
   stats: Stats;
-  pictures: PictureFinder;
 }
 
 declare module 'discord.js' {

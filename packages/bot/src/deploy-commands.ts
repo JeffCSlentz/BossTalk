@@ -5,9 +5,17 @@ import { loadConfig } from './config';
 import logger from './logger';
 import { commands } from './interactions/registry';
 
+// /play random|creature|tag auto-join now, so /join no longer needs to be a
+// typeable command — but its handler stays registered in interactions/registry.ts
+// for the "Join?" button that button-triggered plays (reroll/flip/select) still
+// show when there's no connection, since those intentionally don't auto-join.
+const HIDDEN_FROM_SLASH_PICKER = new Set(['join']);
+
 async function main(): Promise<void> {
   const config = loadConfig();
-  const body = commands.map((c) => ('toJSON' in c.data ? c.data.toJSON() : c.data));
+  const body = commands
+    .filter((_, name) => !HIDDEN_FROM_SLASH_PICKER.has(name))
+    .map((c) => ('toJSON' in c.data ? c.data.toJSON() : c.data));
 
   const rest = new REST().setToken(config.discordToken);
 

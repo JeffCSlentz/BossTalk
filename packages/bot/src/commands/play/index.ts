@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import { BotCommand } from '../../types/Command';
 import randomCommand from './random';
-import creatureCommand from './creature';
+import soundCommand from './sound';
 import tagCommand from './tag';
 
 const data = new SlashCommandBuilder()
@@ -16,14 +16,14 @@ const data = new SlashCommandBuilder()
   .addSubcommand((sub) => sub.setName('random').setDescription('play a random sound'))
   .addSubcommand((sub) =>
     sub
-      .setName('creature')
-      .setDescription('play a random sound from a creature')
-      .addStringOption((o) => o.setName('named').setDescription('choose a creature name').setRequired(true).setAutocomplete(true))
+      .setName('sound')
+      .setDescription('search by creature name or something it said')
+      .addStringOption((o) => o.setName('search').setDescription('Search...').setRequired(true).setAutocomplete(true))
   );
 
 const subcommands: Record<string, BotCommand> = {
   random: randomCommand,
-  creature: creatureCommand,
+  sound: soundCommand,
   tag: tagCommand,
 };
 

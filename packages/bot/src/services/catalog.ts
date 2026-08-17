@@ -2,6 +2,11 @@ import { algoliasearch } from 'algoliasearch';
 import { AlgoliaRecord } from '@bosstalk/shared';
 
 const INDEX_NAME = 'bosstalk_sounds';
+// Replica sorted ascending by `_rand`, dedicated to the random-pick recipe below.
+// Querying the primary index with just a `_rand >= threshold` filter and no sort
+// would fall back to the primary's own ranking (desc(uploadedAt)) to break ties —
+// i.e. "random" would really just mean "most recently uploaded match".
+const RAND_INDEX_NAME = 'bosstalk_sounds_rand';
 
 // No bulk local cache — every lookup queries Algolia live. The one thing
 // Algolia can't do natively is "give me a random record"; that's solved with
@@ -13,6 +18,7 @@ export interface CatalogEntry {
   creatureName: string;
   creatureSlug: string;
   transcript: string;
+  creatureImageUrl?: string;
 }
 
 function toCatalogEntry(hit: AlgoliaRecord & { objectID: string }): CatalogEntry {
@@ -22,6 +28,7 @@ function toCatalogEntry(hit: AlgoliaRecord & { objectID: string }): CatalogEntry
     creatureName: hit.creatureName,
     creatureSlug: hit.creatureSlug,
     transcript: hit.transcript ?? '',
+    creatureImageUrl: hit.creatureImageUrl,
   };
 }
 
@@ -43,7 +50,7 @@ export class Catalog {
     // benefit) — without it every query against this index gets deduped by
     // creatureSlug, which is harmless here (hitsPerPage:1) but not in byCreature.
     const { results } = await this.client.search<AlgoliaRecord>({
-      requests: [{ indexName: INDEX_NAME, query: '', filters, hitsPerPage: 1, distinct: false }],
+      requests: [{ indexName: RAND_INDEX_NAME, query: '', filters, hitsPerPage: 1, distinct: false }],
     });
     const hits = this.hitsFrom(results[0]);
     return hits[0] ? toCatalogEntry(hits[0]) : null;
@@ -78,7 +85,7 @@ export class Catalog {
           query,
           distinct: true,
           hitsPerPage: limit,
-          attributesToRetrieve: ['objectID', 'creatureName', 'creatureSlug', 'r2Url', 'transcript'],
+          attributesToRetrieve: ['objectID', 'creatureName', 'creatureSlug', 'r2Url', 'transcript', 'creatureImageUrl'],
         },
       ],
     });

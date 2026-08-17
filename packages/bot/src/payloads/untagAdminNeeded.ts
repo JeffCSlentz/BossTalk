@@ -10,6 +10,7 @@ export function buildUntagAdminNeededPayload(tagName: string, fileName: string, 
   const button = new ButtonBuilder()
     .setCustomId(JSON.stringify({ button: UNTAG_ADMIN_BUTTON.A_UNTAG, command: 'play', subcommand: 'tag' }))
     .setLabel('Admin: Untag')
+    .setEmoji('🚫')
     .setStyle(ButtonStyle.Danger);
 
   return { embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(button)] };

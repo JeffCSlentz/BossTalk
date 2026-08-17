@@ -1,22 +1,11 @@
-import { SlashCommandBuilder, EmbedBuilder, GuildMember } from 'discord.js';
-import { joinVoiceChannel, createAudioPlayer } from '@discordjs/voice';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { BotCommand } from '../types/Command';
+import { ensureVoiceConnection } from '../voice/ensureConnection';
+import { buildNotInVoiceChannelPayload } from '../payloads/notInVoiceChannel';
 
 async function attemptJoin(interaction: any) {
-  const member = interaction.member as GuildMember;
-  if (!member.voice.channel) {
-    const embed = new EmbedBuilder()
-      .setColor('#ed5121')
-      .addFields([{ name: '( ´･･)ﾉ(._.`)', value: "You're not in a voice channel you silly goose" }]);
-    return { embeds: [embed], ephemeral: true };
-  }
-
-  const connection = joinVoiceChannel({
-    channelId: member.voice.channel.id,
-    guildId: interaction.guild.id,
-    adapterCreator: interaction.guild.voiceAdapterCreator,
-  });
-  connection.subscribe(createAudioPlayer());
+  const connection = await ensureVoiceConnection(interaction);
+  if (!connection) return buildNotInVoiceChannelPayload();
 
   const embed = new EmbedBuilder().setColor('#0099ff').setTitle(`(●'◡'●) I'm in`);
   return { embeds: [embed] };

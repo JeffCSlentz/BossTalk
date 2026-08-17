@@ -1,13 +1,13 @@
-import { Client, Events } from 'discord.js';
+import { Client, Events, MessageFlags } from 'discord.js';
 import { commands } from './registry';
 import logger from '../logger';
 
 async function safeErrorReply(interaction: any, message = 'Sorry, something went wrong.'): Promise<void> {
   try {
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: message, ephemeral: true });
+      await interaction.followUp({ content: message, flags: MessageFlags.Ephemeral });
     } else {
-      await interaction.reply({ content: message, ephemeral: true });
+      await interaction.reply({ content: message, flags: MessageFlags.Ephemeral });
     }
   } catch (err) {
     logger.error(`Failed to send error reply: ${err}`);
@@ -27,6 +27,7 @@ export function registerInteractionRouter(client: Client): void {
         const command = commands.get(interaction.commandName);
         if (!command?.execute) return safeErrorReply(interaction);
         logger.info(`Command /${interaction.commandName} used by ${interaction.user.tag}`);
+        interaction.client.bot.stats.commandRan(interaction.user.id, interaction.user.tag, interaction.commandName);
         return await command.execute(interaction);
       }
 

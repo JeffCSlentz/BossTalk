@@ -4,9 +4,12 @@ import { BotCommand } from '../../types/Command';
 import { SoundState } from '../../types/SoundState';
 import { playUrl } from '../../services/playback';
 import { setMessageState, getMessageState } from '../../services/interactionState';
-import { buildCreaturePayload, Creature } from '../../payloads/creature';
+import { ensureVoiceConnection } from '../../voice/ensureConnection';
+import { buildSoundPayload, Creature } from '../../payloads/sound';
 import { buildJoinChannelPayload } from '../../payloads/joinChannel';
+import { buildNotInVoiceChannelPayload } from '../../payloads/notInVoiceChannel';
 import { buildErrorPayload } from '../../payloads/error';
+import { transcriptSnippet } from '../../util/soundDisplay';
 
 async function loadCreature(interaction: any, slug: string): Promise<Creature | null> {
   const sounds = await interaction.client.bot.catalog.byCreature(slug);
@@ -19,22 +22,39 @@ function stateFor(creature: Creature, soundIndex: number): SoundState {
   return { objectID: sound.objectID, creatureSlug: creature.slug, r2Url: sound.r2Url };
 }
 
+function tagCount(interaction: any): number {
+  return interaction.client.bot.guildTags.get(interaction.guildId).length;
+}
+
 const command: BotCommand = {
-  data: { name: 'creature' },
+  data: { name: 'sound' },
   async execute(interaction) {
-    const slug = interaction.options.getString('named');
+    const connection = await ensureVoiceConnection(interaction);
+    if (!connection) return interaction.reply(buildNotInVoiceChannelPayload());
+
+    const slug = interaction.options.getString('search');
     const creature = await loadCreature(interaction, slug);
     if (!creature) return interaction.reply(buildErrorPayload('Creature not found'));
     await playUrl(interaction.guildId, creature.sounds[0].r2Url);
     interaction.client.bot.stats.playedSound(interaction.guildId, interaction.member.id, interaction.member.user.username, creature.sounds[0].objectID);
-    await interaction.reply(buildCreaturePayload(creature, 0, interaction.client.bot.pictures));
+    await interaction.reply(buildSoundPayload(creature, 0, tagCount(interaction)));
     const message = await interaction.fetchReply();
     setMessageState(message.id, stateFor(creature, 0));
   },
   async autocomplete(interaction) {
     const input = interaction.options.getFocused();
     const hits = await interaction.client.bot.catalog.searchCreatures(input, 20);
-    return interaction.respond(hits.map((h: any) => ({ name: h.creatureName.slice(0, 100), value: h.creatureSlug.slice(0, 100) })));
+    return interaction.respond(
+      hits.map((h: any) => {
+        // Showing the quote (when there is one) whenever a hit has a transcript —
+        // not just when it's *why* this hit matched — teaches users that typing
+        // dialogue works too, without needing Algolia's highlight-result plumbing
+        // to figure out which attribute the match actually came from.
+        const snippet = transcriptSnippet(h.transcript, 6);
+        const label = snippet ? `${h.creatureName} — "${snippet}"` : h.creatureName;
+        return { name: label.slice(0, 100), value: h.creatureSlug.slice(0, 100) };
+      })
+    );
   },
   async button(interaction) {
     const data = JSON.parse(interaction.customId);
@@ -46,7 +66,7 @@ const command: BotCommand = {
     switch (data.button) {
       case 'flip': {
         const soundIndex = Math.min(Math.max(data.soundIndex, 0), creature.sounds.length - 1);
-        await interaction.update(buildCreaturePayload(creature, soundIndex, interaction.client.bot.pictures));
+        await interaction.update(buildSoundPayload(creature, soundIndex, tagCount(interaction)));
         setMessageState(interaction.message.id, stateFor(creature, soundIndex));
         return;
       }
@@ -61,17 +81,17 @@ const command: BotCommand = {
         return interaction.deferUpdate();
       }
       case 'creatureR': {
-        // "Show Creature" button clicked from a RandomMessagePayload embed — posts a new message.
+        // "Show Creature" button clicked from a RandomMessagePayload/TaggedSoundsMessagePayload embed — posts a new message.
         const idx = creature.sounds.findIndex((s) => s.objectID === state.objectID);
         const soundIndex = idx >= 0 ? idx : 0;
-        await interaction.reply(buildCreaturePayload(creature, soundIndex, interaction.client.bot.pictures));
+        await interaction.reply(buildSoundPayload(creature, soundIndex, tagCount(interaction)));
         const message = await interaction.fetchReply();
         setMessageState(message.id, stateFor(creature, soundIndex));
         return;
       }
       case 'tag': {
         const modal = new ModalBuilder()
-          .setCustomId(JSON.stringify({ command: 'play', subcommand: 'creature', modal: 'tag' }))
+          .setCustomId(JSON.stringify({ command: 'play', subcommand: 'sound', modal: 'tag' }))
           .setTitle("Tagging a Sound (●'◡'●)");
         const tagNameInput = new TextInputBuilder().setCustomId('tagNameInput').setLabel('Enter a tag for this sound').setStyle(TextInputStyle.Short);
         modal.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(tagNameInput));
@@ -88,7 +108,7 @@ const command: BotCommand = {
     const sound = creature.sounds[soundIndex];
     await playUrl(interaction.guildId, sound.r2Url);
     interaction.client.bot.stats.playedSound(interaction.guildId, interaction.member.id, interaction.member.user.username, sound.objectID);
-    await interaction.update(buildCreaturePayload(creature, soundIndex, interaction.client.bot.pictures));
+    await interaction.update(buildSoundPayload(creature, soundIndex, tagCount(interaction)));
     setMessageState(interaction.message.id, stateFor(creature, soundIndex));
   },
   async modal(interaction) {

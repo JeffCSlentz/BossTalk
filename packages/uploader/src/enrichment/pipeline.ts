@@ -10,8 +10,9 @@ import logger, { formatError } from '../logger';
 // Whisper (local and OpenAI) hallucinate these on non-speech audio — silence,
 // roars, growls — instead of returning an empty transcript. Filter them out so
 // they don't get indexed as if they were real dialogue.
-const HALLUCINATION_EXACT = ['thanks for watching!', 'thanks for watching', 'thank you for watching!', 'thank you for watching'];
 const HALLUCINATION_SUBSTRINGS = [
+  'thanks for watching',
+  'thank you for watching',
   'translation by',
   'translated by',
   'transcription by',
@@ -29,7 +30,6 @@ const HALLUCINATION_SUBSTRINGS = [
 function isHallucinatedTranscript(text: string): boolean {
   const normalized = text.trim().toLowerCase();
   if (!normalized) return false;
-  if (HALLUCINATION_EXACT.includes(normalized)) return true;
   return HALLUCINATION_SUBSTRINGS.some((phrase) => normalized.includes(phrase));
 }
 
