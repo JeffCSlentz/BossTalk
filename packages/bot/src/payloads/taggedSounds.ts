@@ -31,19 +31,16 @@ export function buildTaggedSoundsPayload(tags: Tag[], curTagIndex: number) {
   const embed = new EmbedBuilder().setColor('#0099ff').setTitle('Tags').setThumbnail('https://i.imgur.com/AfFp7pu.png');
 
   let tagNames = tags.map((t) => t.tag);
-  let fileNames = tags.map((t) => fileNameFromR2Url(t.r2Url));
   tagNames[curTagIndex] = `**${tagNames[curTagIndex]}**`;
-  fileNames[curTagIndex] = `**${fileNames[curTagIndex]}**`;
 
   if (pagesNeeded) {
     const start = curPage * ITEMS_PER_PAGE;
     const end = (curPage + 1) * ITEMS_PER_PAGE;
     tagNames = tagNames.slice(start, end);
-    fileNames = fileNames.slice(start, end);
     embed.setFooter({ text: `Page ${curPage + 1} of ${lastPage + 1}` });
   }
 
-  embed.addFields({ name: 'Tag', value: tagNames.join('\n'), inline: true }, { name: 'Sound', value: fileNames.join('\n'), inline: true });
+  embed.addFields({ name: 'Tags', value: tagNames.join('\n') });
 
   const pageTags = tags.map((t, i) => ({ t, i })).slice(curPage * ITEMS_PER_PAGE, (curPage + 1) * ITEMS_PER_PAGE);
   const select = new StringSelectMenuBuilder()
@@ -61,25 +58,30 @@ export function buildTaggedSoundsPayload(tags: Tag[], curTagIndex: number) {
 
   const backButton = new ButtonBuilder()
     .setCustomId(JSON.stringify({ button: TAG_BUTTON.FLIP, command: 'play', subcommand: 'tag', tagIndex: (curPage - 1) * ITEMS_PER_PAGE }))
-    .setLabel('<--')
+    .setLabel('Back')
+    .setEmoji('⬅️')
     .setStyle(ButtonStyle.Secondary)
     .setDisabled(curPage === 0);
   const nextButton = new ButtonBuilder()
     .setCustomId(JSON.stringify({ button: TAG_BUTTON.FLIP, command: 'play', subcommand: 'tag', tagIndex: (curPage + 1) * ITEMS_PER_PAGE }))
-    .setLabel('-->')
+    .setLabel('Next')
+    .setEmoji('➡️')
     .setStyle(ButtonStyle.Secondary)
     .setDisabled(curPage === lastPage);
   const playButton = new ButtonBuilder()
     .setCustomId(JSON.stringify({ button: TAG_BUTTON.PLAY, command: 'play', subcommand: 'tag', tagIndex: curTagIndex }))
     .setLabel('Play')
+    .setEmoji('▶️')
     .setStyle(ButtonStyle.Primary);
   const creatureButton = new ButtonBuilder()
-    .setCustomId(JSON.stringify({ button: TAG_BUTTON.CREATURE_T, command: 'play', subcommand: 'creature', tagIndex: curTagIndex }))
+    .setCustomId(JSON.stringify({ button: TAG_BUTTON.CREATURE_T, command: 'play', subcommand: 'sound', tagIndex: curTagIndex }))
     .setLabel('Show Creature')
+    .setEmoji('👤')
     .setStyle(ButtonStyle.Secondary);
   const untagButton = new ButtonBuilder()
     .setCustomId(JSON.stringify({ button: TAG_BUTTON.TRY_UNTAG, command: 'play', subcommand: 'tag', tagIndex: curTagIndex }))
     .setLabel('Untag')
+    .setEmoji('🚫')
     .setStyle(ButtonStyle.Secondary);
 
   const buttonsRow = new ActionRowBuilder<ButtonBuilder>();

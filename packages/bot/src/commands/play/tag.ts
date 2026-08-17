@@ -1,18 +1,32 @@
 import { getVoiceConnection, VoiceConnectionStatus } from '@discordjs/voice';
 import { PermissionsBitField } from 'discord.js';
 import { BotCommand } from '../../types/Command';
+import { SoundState } from '../../types/SoundState';
+import { Tag } from '../../types/Tag';
 import { playUrl } from '../../services/playback';
 import { setMessageState, getMessageState } from '../../services/interactionState';
+import { ensureVoiceConnection } from '../../voice/ensureConnection';
 import { buildTaggedSoundsPayload, TAG_BUTTON } from '../../payloads/taggedSounds';
 import { buildJoinChannelPayload } from '../../payloads/joinChannel';
+import { buildNotInVoiceChannelPayload } from '../../payloads/notInVoiceChannel';
 import { buildErrorPayload } from '../../payloads/error';
 import { buildUntagSuccessPayload, UNTAG_SUCCESS_BUTTON, UndoState } from '../../payloads/untagSuccess';
 import { buildUntagAdminNeededPayload, UNTAG_ADMIN_BUTTON } from '../../payloads/untagAdminNeeded';
-import { fileNameFromR2Url } from '../../util/soundDisplay';
+import { fileNameFromR2Url, creatureSlugFromR2Url, objectIdFromR2Url } from '../../util/soundDisplay';
+
+// Tag only stores r2Url, not creatureSlug/objectID — derive them from the URL
+// so the "Show Creature" button (routed to commands/play/sound.ts, which
+// reads SoundState) works from a tag message too, same as from random/creature ones.
+function stateForTag(tag: Tag): SoundState {
+  return { objectID: objectIdFromR2Url(tag.r2Url), creatureSlug: creatureSlugFromR2Url(tag.r2Url), r2Url: tag.r2Url };
+}
 
 const command: BotCommand = {
   data: { name: 'tag' },
   async execute(interaction) {
+    const connection = await ensureVoiceConnection(interaction);
+    if (!connection) return interaction.reply(buildNotInVoiceChannelPayload());
+
     const tagName = interaction.options.getString('named');
     const allTags = interaction.client.bot.guildTags.get(interaction.guildId);
     const matched = allTags.filter((t: any) => t.tag === tagName);
@@ -23,7 +37,9 @@ const command: BotCommand = {
     const tagIndex = allTags.findIndex((t: any) => t.tag === tag.tag && t.r2Url === tag.r2Url);
     await playUrl(interaction.guildId, tag.r2Url);
     interaction.client.bot.stats.playedSound(interaction.guildId, interaction.member.id, interaction.member.user.username, tag.r2Url);
-    return interaction.reply(buildTaggedSoundsPayload(allTags, tagIndex));
+    await interaction.reply(buildTaggedSoundsPayload(allTags, tagIndex));
+    const message = await interaction.fetchReply();
+    setMessageState(message.id, stateForTag(tag));
   },
   async autocomplete(interaction) {
     const input = (interaction.options.getFocused() as string).toLowerCase();
@@ -39,8 +55,12 @@ const command: BotCommand = {
     const allTags = interaction.client.bot.guildTags.get(interaction.guildId);
 
     switch (data.button) {
-      case TAG_BUTTON.FLIP:
-        return interaction.update(buildTaggedSoundsPayload(allTags, data.tagIndex));
+      case TAG_BUTTON.FLIP: {
+        const tag = allTags[data.tagIndex];
+        await interaction.update(buildTaggedSoundsPayload(allTags, data.tagIndex));
+        if (tag) setMessageState(interaction.message.id, stateForTag(tag));
+        return;
+      }
 
       case TAG_BUTTON.PLAY: {
         const connection = getVoiceConnection(interaction.guildId);
@@ -106,7 +126,8 @@ const command: BotCommand = {
     if (!tag) return interaction.reply(buildErrorPayload());
     await playUrl(interaction.guildId, tag.r2Url);
     interaction.client.bot.stats.playedSound(interaction.guildId, interaction.member.id, interaction.member.user.username, tag.r2Url);
-    return interaction.update(buildTaggedSoundsPayload(allTags, tagIndex));
+    await interaction.update(buildTaggedSoundsPayload(allTags, tagIndex));
+    setMessageState(interaction.message.id, stateForTag(tag));
   },
 };
 

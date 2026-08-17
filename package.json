@@ -13,6 +13,7 @@
     "deploy-commands": "npm run deploy-commands --workspace=packages/bot"
   },
   "allowScripts": {
-    "ffmpeg-static@5.3.0": true
+    "ffmpeg-static@5.3.0": true,
+    "puppeteer@23.11.1": true
   }
 }

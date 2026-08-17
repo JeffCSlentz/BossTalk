@@ -16,6 +16,7 @@ export function buildUntagSuccessPayload(tagName: string, fileName: string) {
   const undoButton = new ButtonBuilder()
     .setCustomId(JSON.stringify({ button: UNTAG_SUCCESS_BUTTON.UNDO_UNTAG, command: 'play', subcommand: 'tag' }))
     .setLabel('Undo')
+    .setEmoji('↩️')
     .setStyle(ButtonStyle.Secondary);
 
   return { embeds: [embed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(undoButton)] };

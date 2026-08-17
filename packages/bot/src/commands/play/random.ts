@@ -3,8 +3,10 @@ import { BotCommand } from '../../types/Command';
 import { SoundState } from '../../types/SoundState';
 import { playUrl } from '../../services/playback';
 import { setMessageState, getMessageState } from '../../services/interactionState';
+import { ensureVoiceConnection } from '../../voice/ensureConnection';
 import { buildRandomPayload } from '../../payloads/random';
 import { buildJoinChannelPayload } from '../../payloads/joinChannel';
+import { buildNotInVoiceChannelPayload } from '../../payloads/notInVoiceChannel';
 import { buildErrorPayload } from '../../payloads/error';
 import { CatalogEntry } from '../../services/catalog';
 
@@ -15,11 +17,15 @@ function toState(sound: CatalogEntry): SoundState {
 const command: BotCommand = {
   data: { name: 'random' },
   async execute(interaction) {
+    const connection = await ensureVoiceConnection(interaction);
+    if (!connection) return interaction.reply(buildNotInVoiceChannelPayload());
+
     const sound = await interaction.client.bot.catalog.random();
     if (!sound) return interaction.reply(buildErrorPayload("Couldn't find a sound, sorry!"));
     await playUrl(interaction.guildId, sound.r2Url);
     interaction.client.bot.stats.playedSound(interaction.guildId, interaction.member.id, interaction.member.user.username, sound.objectID);
-    await interaction.reply(buildRandomPayload(sound, interaction.client.bot.pictures));
+    const guildTagCount = interaction.client.bot.guildTags.get(interaction.guildId).length;
+    await interaction.reply(buildRandomPayload(sound, guildTagCount));
     const message = await interaction.fetchReply();
     setMessageState(message.id, toState(sound));
   },
@@ -42,7 +48,8 @@ const command: BotCommand = {
       case 'reroll': {
         const sound = await interaction.client.bot.catalog.random();
         if (!sound) return interaction.reply(buildErrorPayload("Couldn't find a sound, sorry!"));
-        await interaction.update(buildRandomPayload(sound, interaction.client.bot.pictures));
+        const guildTagCount = interaction.client.bot.guildTags.get(interaction.guildId).length;
+        await interaction.update(buildRandomPayload(sound, guildTagCount));
         setMessageState(interaction.message.id, toState(sound));
         return;
       }

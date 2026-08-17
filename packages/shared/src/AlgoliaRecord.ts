@@ -13,6 +13,9 @@ export interface AlgoliaRecord extends Record<string, unknown> {
   // Random selection has no native Algolia query — the bot filters
   // `_rand >= <threshold>` instead of holding a local copy of the catalog.
   _rand: number;
+  // Enrichment field — not set by the upload pipeline. Backfilled from
+  // packages/bot/data/picUrls.json (creatureName -> first image URL).
+  creatureImageUrl?: string;
 }
 
 export function objectIDFromFileKey(fileKey: string): string {
