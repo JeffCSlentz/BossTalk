@@ -65,8 +65,5 @@ manually) before starting a new session.
   pre-padded Ogg/Opus and pass straight through `@discordjs/voice`.
 - If the service can't find `.env` or writes logs to the wrong place, check
   NSSM's `AppDirectory` is set to this folder, not the repo root.
-- `npm run migrate-guild-tags -- <path>` — one-time script to convert an old
-  `guildTags.json` (from the pre-R2 bot) to the new format. Run against a
-  **copy**, never the live file.
 - `npm run find-pictures` — the creature-thumbnail scraper (`scripts/findPictures.ts`),
   run occasionally by hand, not part of the bot process.

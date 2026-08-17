@@ -13,7 +13,6 @@
     "dev": "ts-node src/index.ts",
     "typecheck": "tsc --build --noEmit",
     "deploy-commands": "ts-node src/deploy-commands.ts",
-    "migrate-guild-tags": "ts-node scripts/migrateGuildTags.ts",
     "find-pictures": "ts-node scripts/findPictures.ts"
   },
   "dependencies": {
