@@ -16,6 +16,12 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        with:
+          # Default clean:true runs `git clean -ffdx` before checkout, which
+          # wipes gitignored files this checkout depends on between runs —
+          # packages/bot/.env (provisioned once, see deploy.ps1) and any
+          # local data/log files the running bot writes back into this tree.
+          clean: false
 
       - name: Deploy
         shell: powershell

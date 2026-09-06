@@ -7,6 +7,13 @@
 # already installed (one-time manual setup, not done by this script).
 $ErrorActionPreference = 'Stop'
 
+# Stop the service before touching node_modules/dist: this directory is also
+# where BossTalkBot runs from, and Windows locks files a running process has
+# open — most notably ffmpeg-static's ffmpeg.exe while audio is playing —
+# which makes npm install/build fail intermittently if the bot stays up.
+Write-Host "Stopping BossTalkBot service..."
+Stop-Service -Name BossTalkBot -ErrorAction SilentlyContinue
+
 Write-Host "Installing dependencies..."
 npm install
 if ($LASTEXITCODE -ne 0) { throw "npm install failed" }
@@ -19,7 +26,7 @@ Write-Host "Registering slash commands..."
 npm run deploy-commands --workspace=packages/bot
 if ($LASTEXITCODE -ne 0) { throw "deploy-commands failed" }
 
-Write-Host "Restarting BossTalkBot service..."
-Restart-Service -Name BossTalkBot
+Write-Host "Starting BossTalkBot service..."
+Start-Service -Name BossTalkBot
 
 Write-Host "Done. Check status with: Get-Service BossTalkBot"
