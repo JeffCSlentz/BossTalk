@@ -37,3 +37,11 @@ export function loadConfig(opts: { dryRun?: boolean } = {}): RunnerConfig & { cr
     cron: optional_env('SCHEDULER_CRON', '0 3 * * *'),
   };
 }
+
+export function loadEnrichmentConfig(): { algoliaAppId: string; algoliaApiKey: string; cron: string } {
+  return {
+    algoliaAppId: require_env('ALGOLIA_APP_ID'),
+    algoliaApiKey: require_env('ALGOLIA_ADMIN_API_KEY'),
+    cron: optional_env('ENRICH_CRON', '0 4 * * *'),
+  };
+}

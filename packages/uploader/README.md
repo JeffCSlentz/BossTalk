@@ -2,7 +2,7 @@
 
 Reads sound files directly from a local World of Warcraft installation, pads them with silence, uploads them to Cloudflare R2, transcribes them with Whisper, and indexes a minimal record to Algolia.
 
-This is the **audio + transcription upload** step only. Enrichment (mood tags, expansion/zone aliases, creature images) is intentionally out of scope here — it'll be a separate pipeline that runs later over already-uploaded records, not built yet.
+This is the **audio + transcription upload** step. A second, separate **enrichment pipeline** (mood tags, sound types, expansion/zone/creature facts, creature images) runs later over already-uploaded records — see [Enrichment pipeline](#enrichment-pipeline) below.
 
 ---
 
@@ -56,6 +56,74 @@ Manifest-change short-circuit (SOURCE_MODE=wow-install only):
 ```
 
 The padded silence is baked into every file at upload time so the Discord bot can stream directly from R2 without needing ffmpeg at playback.
+
+---
+
+## Enrichment pipeline
+
+Runs after (and independently of) the upload sync above — over already-uploaded records, filling in fields the upload step deliberately leaves blank. Since Algolia indexes at the sound level, creature-level facts are resolved once per creature and duplicated onto every one of its sounds.
+
+```
+Fetch every sound record missing soundTypes ("not yet enriched")
+  └─ Group by creatureSlug
+
+For each creature:
+  1. Resolve creature-level facts (expansion, zone, instanceType, creatureRole,
+     raceSpecies, expansion/zoneAliases, image). First checks Algolia itself
+     for any sound of this creature already marked creatureEnriched:true and
+     reuses those facts if found — the "cache" is the facts already stamped
+     on the creature's other sounds, not a local file, so there's nothing to
+     lose to a wiped disk or a machine switch. Only on a genuine first sighting:
+       Tier 1 — plain Haiku guess from training knowledge (no tools, cheap).
+                Includes a confidence field; used as-is when high.
+       Tier 2 — only on low confidence: Claude Agent SDK with WebSearch/
+                WebFetch, for creatures the model doesn't already know.
+     Tier 1 has no browsing, so its image field is always empty — falls back
+     to packages/bot/data/picUrls.json (creatureName -> first image URL).
+  2. Queue that creature's un-enriched sounds for tagging (soundTypes,
+     moodTags, hasDialogue), batching up to 25 sounds from the same creature
+     into a single request to amortize the fixed prompt/schema cost.
+
+Submit every batched request as one Anthropic Message Batch (~50% cheaper
+than live calls, appropriate since this isn't latency-sensitive). Batch
+state (ID + per-chunk objectID/creature-fact mapping) is persisted to
+data/pendingSoundBatch.json — if the process is interrupted or killed while
+a batch is still processing, the next run resumes polling it instead of
+resubmitting (and re-paying for) it.
+
+Poll until the batch finishes (usually a few minutes; up to 24h max per
+Anthropic's SLA), then stamp each sound's tags plus its creature's facts
+onto the matching Algolia record via a partial update.
+```
+
+### Setup
+
+Requires an `ANTHROPIC_API_KEY` in `.env` — this is Anthropic API billing (pay-per-token), separate from and not covered by a Claude Code/Claude.ai subscription:
+
+```env
+# Anthropic (required for the enrichment pipeline — npm run enrich)
+ANTHROPIC_API_KEY=
+
+# Cron for the enrichment runner, long-lived mode only (default: 4am daily)
+ENRICH_CRON=0 4 * * *
+
+# Model for both enrichment tiers (default: claude-haiku-4-5-20251001)
+ANTHROPIC_ENRICHMENT_MODEL=
+```
+
+### Running it
+
+```
+npm run enrich:once                        # everything un-enriched, then exit
+npm run enrich:once -- --creature murloc   # scoped to one creature — good for a first test
+npm run enrich                             # long-lived, runs on ENRICH_CRON
+```
+
+Same `--creature <slug>` scoping as the upload pipeline. There's no `--dry-run` for enrichment — every run is billed (see Cost below), so test scoped to one creature first.
+
+### Cost
+
+Both the creature-level and sound-level steps call the Anthropic API and are billed per token (plus a $10-per-1,000-searches fee for Tier 2's WebSearch calls). Ballpark for the full backlog (~139,000 sounds / ~5,500 creatures as of 2026-09) after the batching + Message Batches + tiered-lookup optimizations above: **roughly $60–160**, down from an unoptimized ~$200–400. Cost scales with how many creatures need Tier 2 (WebSearch) — well-known creatures usually resolve on the cheap Tier 1 guess alone. Test on a single creature first to sanity-check before running the full backlog.
 
 ---
 
@@ -210,6 +278,8 @@ The transcript is stored on the Algolia record.
 ---
 
 ## CLI flags
+
+For `src/index.ts` (the upload pipeline). `src/enrichIndex.ts` (enrichment) supports `--run-once` and `--creature <slug>` the same way — no `--dry-run`, `--force-manifest`, or `--force-reindex` there.
 
 | Flag | Description |
 |------|-------------|
